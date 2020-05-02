@@ -1,0 +1,39 @@
+{% extends "gestionnaire/base.html"  %}
+ 
+{% block title %}
+    Joueurs - {{ block.super }}
+{% endblock %}
+ 
+{% block content %}    
+ 
+    <div class="content">
+        <div class="section-inner clearfix">         
+        {% for joueur in joueurs %}
+            <h3>                        
+                <a href="{{joueur.get_absolute_url }}">{{ joueur.nom|capfirst }}</a>
+            </h3>
+            <p class="info-joueur">
+                <span>Nom : {{ joueur.nom }} </span> |
+                <span>Prénom : {{ joueur.prenom }}</span> |
+            </p>
+        {% empty %}
+            <p>Il n'y a pas de joueur dans la base</p>
+        {% endfor %}    
+        </div>
+    </div>
+	<div class="pagination">
+		<div class="section-inner clearfix">
+			<p>
+				{% if joueurs.has_previous %}
+					<a href="?page={{ joueurs.previous_page_number }}">< Prev</a> |
+				{% endif %}
+	 
+				{% if joueurs.has_next %}
+					<a href="?page={{ joueurs.next_page_number }}">Next ></a>
+				{% endif %}
+	 
+				<span>Page {{ joueurs.number }} of {{ joueurs.paginator.num_pages }}</span>
+			</p>
+		</div>
+	</div>
+{% endblock %}

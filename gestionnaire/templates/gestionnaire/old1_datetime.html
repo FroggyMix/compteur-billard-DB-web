@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Current Time</title>
+</head>
+<body>
+ 
+    {% include template_name %}
+
+    {# This is a comment #}
+ 
+    {# check the existence of now variable in the template using if tag #}
+ 
+    {% if now %}   
+        <p>Current date and time is {{ now }}</p>
+    {% else %}               
+        <p>now variable is not available</p>
+    {% endif %}
+
+    <p>Current scheme: {{ request.scheme }}</p>
+
+    <p> BASE_DIR = {{ base_dir }}</p>
+ 
+</body>
+</html>

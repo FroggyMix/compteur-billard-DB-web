@@ -1,0 +1,34 @@
+{% extends "gestionnaire/base.html"  %}
+ 
+{% block title %}
+    Joueur {{joueur.pk}} - {{ block.super }}
+{% endblock %}
+ 
+{% block content %}    
+ 
+    <div class="content">
+        <div class="section-inner clearfix">        
+ 
+			<h1>{{ joueur.prenom|capfirst }} {{ joueur.nom|upper }}</h1>
+			<p class="joueur-info">
+				<span>email : {{ Joueur.email }} </span>
+				| <span>Création le : {{ joueur.d_creation }}<span>
+				| <span><a href="{% url 'joueur_update' joueur.id  %}">Modifier</a></span>
+
+				<h4>A participé à {{nb_match}} matchs : </h4>
+				{% for ma in liste_match %}
+					<h5>le {{ ma.d_debut }} </h5>
+					<span>face à : </span> | 
+					<span> Score final : </span>
+				{% empty %}
+					<p>Aucune match pour l'instant</p>
+				{% endfor %}
+
+			</p>
+			<p>
+				{{ post.content }}
+			</p>
+        </div>
+    </div>
+ 
+{% endblock %}

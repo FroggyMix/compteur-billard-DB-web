@@ -1,0 +1,43 @@
+{% extends "gestionnaire/base.html"  %}
+ 
+{% block title %}
+    Match {{match.pk}} - {{ block.super }}
+{% endblock %}
+ 
+{% block content %}    
+ 
+    <div class="content">
+        <div class="section-inner clearfix">        
+ 
+			<h1>Match n° {{ match.pk|capfirst }}</h1>
+			<p class="match-info">
+				<span>Date de début : {{ match.d_debut }} |</span>
+				<span>Jeu : {{ match.jeu_type|upper }} |</span>
+				<span>Variante : <a href="{{match.jeu_variante.get_absolute_url }}">{{ match.jeu_variante.nom }}</a></span> |
+				<span> <a href="{{match.joueur1.get_absolute_url }}">{{ match.joueur1.nom }}</a> vs <a href="{{ match.joueur2.get_absolute_url }}">{{ match.joueur2.nom }}</a></span>|
+				<span>Distance : {{ match.nb_frames }}
+				<span>Fin du match : {{ match.d_fin|default_if_none:"En cours" }} 
+				<span>Match terminé : {% if match.d_fin %}
+										oui
+										{% else %}
+										non
+										{% endif %}</span>
+				<span>Score : {{ match.score_j1 }} : {{ match.score_j2 }} </span>
+				<span>les frames : {{ frames }} </span>
+				<h4>Frames : </h2>
+				{% for fr in frames %}
+					<h1>{{ fr.scoref_j1 }} : {{ fr.scoref_j2 }}</h1>
+				{% empty %}
+					<p>Aucune frame pour l'instant</p>
+				{% endfor %}
+				{# <span>les frames : {{ match.objects.filter(frame__match=match }} </span> #}
+				| <span><a href="{% url 'match_update' match.id  %}">Modifier</a></span>
+
+			</p>
+			<p>
+				{{ post.content }}
+			</p>
+        </div>
+    </div>
+ 
+{% endblock %}

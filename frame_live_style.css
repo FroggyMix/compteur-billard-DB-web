@@ -1,0 +1,243 @@
+/*DEBUGGAGE*/
+/*div {border:0.2mm dashed red;}
+p {border:0.2mm dashed green;}*/
+
+/* Layout */
+html {display: flex; flex-direction: column;} /* IE fix */
+body {
+  display: flex; /* crée un contexte flex pour ses enfants */
+  flex-direction: column; /* affichage vertical */
+  min-height: 100vh;  /*toute la hauteur du viewport (compatible IE9+)*/
+}
+
+.frame_wrapper {
+  display: block; /* IE fix */
+  /*flex: 1 1 auto; /* occupe la hauteur restante */
+  display: flex; /* crée un contexte flex pour ses enfants */
+  flex-direction: row; /* affichage horizontal */
+	/*max-height: 50vh;*/
+}
+.joueur,.reprise {
+  display: flex; /* IE fix */
+  flex: 1; /* occupe la largeur restante */
+	flex-direction: column; /* affichage vertical */
+}
+.reprise{justify-content:space-evenly;text-align : center;}
+
+.frame_reprise{	line-height:15vmin; font-size:15vmin;color:pink;}
+.frame_timer span{line-height:5vmin; font-size:5vmin;}
+.frame_shot_timer span{line-height:2vmin; font-size:2vmin;}
+.scoref {line-height:25vmin; font-size:25vmin;}
+.moyennef span{line-height:5vmin; font-size:5vmin;}
+.break span{line-height:10vmin; font-size:10vmin;}
+
+.break{	display: none;} /*par défaut le break n'est pas affiché (cf. .active)*/
+
+.identite{
+  flex-grow:1;
+  display: flex;
+  flex-direction: column;
+  justify-content: end;  /*all at bottom*/
+}
+
+.nom{display:flex; flex-direction:row;justify-content: end;}
+.nom span{display:block;line-height:4vmin; font-size:4vmin;}
+
+
+/*Joueur ACTIF*/
+.joueur_actif{color:lightgreen;}
+.joueur_actif .break{display: block;}
+
+/*Différence joueur droite/gauche*/
+.droite{text-align:left}
+.droite .nom{justify-content:start;}
+.gauche{text-align:right}
+.gauche .nom{justify-content:end;}
+
+.actions_wrapper{
+
+}
+.stat_wrapper{}
+.frame_bottom {flex: 1;}
+
+/* RESPONSIVE */
+/*Bascule en mode colonne si largeur d'ecran devient petite*/
+@media (max-width: 640px) {
+	body {
+  min-height: 0; 
+}
+	.frame_wrapper {
+    flex-direction: column;
+  }
+  .joueur,.reprise {
+		flex-basis: auto;
+	}
+.gauche{text-align:left}
+.droite{text-align:right}
+}
+
+/* Decoration */
+body {
+	margin: 0;
+	background: #eee;
+	font-family: "Century Gothic", helvetica, arial, sans-serif;
+	font-size: 1vmin;
+}
+header{
+	padding:10px;
+  background-color: #fff;
+  box-shadow: 1px 1px 4px 0 rgba(0,0,0,.1);
+  /*position: fixed;*/
+  /*width: 99%;*/
+  z-index: 3;
+}
+
+section, footer {
+	padding: 10px;
+	margin: 0;
+	border: 10px solid #eee;
+	/*border-radius: 10px;*/
+	color: #fff;
+}
+section {
+	background: #333;
+}
+footer {
+	background: #4CAF50;/*olivedrab;*/
+  text-align: center;
+}
+
+
+/*************************/
+/* TOP MENU */
+a {
+  color: #fff;
+}
+
+/* header */
+.header ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  overflow: hidden;
+  background-color: #333;
+}
+
+.header li a {
+  display: block;
+  padding: 20px 20px;
+  border-right: 1px solid #f4f4f4;
+  text-decoration: none;
+}
+
+.header li a:hover,
+.header .menu-btn:hover {
+  background-color: #eee;
+	color:#000
+}
+
+.header .logo {
+  display: block;
+  float: left;
+  font-size: 2em;
+  padding: 10px 20px;
+  text-decoration: none;
+}
+
+/* menu */
+
+.header {background-color:#333}
+.header .menu {
+  clear: both;
+  max-height: 0;
+  transition: max-height .2s ease-out;
+}
+.header .menu .active {
+	background-color: #4CAF50;
+  color: white;
+}
+
+/* menu icon */
+
+.header .menu-icon {
+  cursor: pointer;
+  display: inline-block;
+  float: right;
+  padding: 28px 20px;
+  position: relative;
+  user-select: none;
+}
+
+.header .menu-icon .navicon {
+  background: #fff;
+  display: block;
+  height: 2px;
+  position: relative;
+  transition: background .2s ease-out;
+  width: 18px;
+}
+
+.header .menu-icon .navicon:before,
+.header .menu-icon .navicon:after {
+  background: #fff;
+  content: '';
+  display: block;
+  height: 100%;
+  position: absolute;
+  transition: all .2s ease-out;
+  width: 100%;
+}
+
+.header .menu-icon .navicon:before {
+  top: 5px;
+}
+
+.header .menu-icon .navicon:after {
+  top: -5px;
+}
+
+/* menu btn */
+
+.header .menu-btn {display: none;}
+.header .menu-btn:checked ~ .menu {max-height: 240px;}
+.header .menu-btn:checked ~ .menu-icon .navicon {background: transparent;}
+.header .menu-btn:checked ~ .menu-icon .navicon:before {transform: rotate(-45deg);}
+.header .menu-btn:checked ~ .menu-icon .navicon:after {transform: rotate(45deg);}
+.header .menu-btn:checked ~ .menu-icon:not(.steps) .navicon:before,
+.header .menu-btn:checked ~ .menu-icon:not(.steps) .navicon:after {top: 0;}
+
+/* RESPONSIVE MENU 48em = 768px */
+
+@media (min-width: 48em) {
+  .header li {
+    float: left;
+  }
+  .header li a {
+    padding: 20px 30px;
+  }
+  .header .menu {
+    clear: none;
+    float: right;
+    max-height: none;
+  }
+  .header .menu-icon {
+    display: none;
+  }
+}
+
+/*ZONE de modifications*/
+input[type=number],input[type=button] {
+	font-size: 2em;
+	border-radius: 10px;
+	border-bottom: 2px solid #ccc;
+	padding: 5px;
+	padding-left: 10px;
+}
+input[type=number] {
+  color: #222;
+	width: 2em;
+}
+input[type=button] {
+  color: #eee;
+  background-color:#4CAF50;
+}

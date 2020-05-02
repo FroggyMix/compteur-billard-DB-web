@@ -1,0 +1,83 @@
+{% extends "gestionnaire/base.html"  %}
+
+{% block title %}
+   Frame {{frame.pk}} - {{ block.super }}
+{% endblock %}
+
+{% load static %}
+{% block styles %} 
+<link rel="stylesheet" type="text/css" href="{% static 'gestionnaire/css/style_frame.css' %}">
+{% endblock %}
+
+{% block content %}  
+{{ frame_id|json_script:"frame-id" }}  
+<div class="frame_top">
+
+</div>	
+
+<div class="frame_wrapper">	
+	<section class="joueur gauche joueur_actif">
+		<div class="score">
+			<div class="scoref" id="scoref_j1"></div>
+			<div class="moyennef">moyenne <span id="moyennef_j1"></span></div>
+			<div class="break">break <span id="break_j1"></span></div>
+		</div>
+		<div class="identite">
+			<div class='nom'>
+				<span id="identite_j1">Joueur1</span>
+				<div class="drapeau"><img src="https://upload.wikimedia.org/wikipedia/commons/0/05/Flag_of_Brazil.svg" alt="pays" width=40wmin >
+				</div>
+			</div>
+		</div>
+	</section>
+
+	<section class="reprise">
+		<div class="match-infos">
+			<div class="match_score"><span id="match_score"></span></div>		
+		</div>
+		<div class="frame_reprise" id="frame_reprise"></div>
+		<div class="timer-infos">	
+			<div class="timer">Shot time <span id="shot_timer">01:25</span></div>
+			<div class="timer">Frame time <span id="frame_timer"></span></div>
+			<div class="timer">Match time <span id="match_timer">03:40:12</span></div>
+		</div>
+
+	</section>
+	
+	<section class="joueur droite">
+		<div class="score">
+			<div class="scoref" id="scoref_j2"></div>
+			<div class="moyennef"><span id="moyennef_j2"></span> moyenne</div>
+			<div class="break"> <span id="break_j2"></span> break</div>
+		</div>
+		<div class="identite">
+			<div class='nom'>
+				<div class="drapeau"><img src="https://upload.wikimedia.org/wikipedia/commons/0/05/Flag_of_Brazil.svg" alt="pays" width=40wmin >
+				</div>
+				<span id="identite_j2">Joueur2</span>				
+			</div>
+		</div>
+	</section>	
+</div> <!-- /frame_wrapper -->
+
+<div class="actions_wrapper">
+	<H3>Valeurs à ajouter (négatifs autorisés) pour :</H3>
+	<label for="maj_J1">Joueur 1 :</label>
+	<input type="number" id="maj_J1" name="maj_J1" min="-100" max="100">
+	<label for="maj_J1">Joueur 2 :</label>
+	<input type="number" id="maj_J2" name="maj_J2" min="-100" max="100">
+	<label for="maj_J1">Reprise :</label>
+	<input type="number" id="maj_reprise" name="maj_reprise" min="-100" max="100">
+	<input id="maj_scores_submit" type="button" value="Modifier">
+</div>     
+
+<div class="stat_wrapper"> 
+	<H3>Statistiques</H3>
+</div>															 
+
+<div class="frame_bottom">(pour gérer l'espace vertical ou pour afficher des messages)</div>
+{% endblock %}
+{% block extra_js %}
+	{% load static %}
+	<script src="{% static 'gestionnaire/js/websocket_frame_live.js' %}"></script>
+{% endblock %}

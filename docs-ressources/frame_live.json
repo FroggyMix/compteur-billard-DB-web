@@ -1,0 +1,24 @@
+#JSON strucure pour les websocket de mise à jour de la page frame
+
+#du back vers le front
+{   
+	"match":{
+		"nb_frames":3,
+		"scorem_j1":0,
+		"scorem_j2":1,
+		"d_debut":"23/04/2020 10:12:11",
+		"distanceFR_j1":30,
+		"distanceFR_j2":60
+	},
+	"d_debut":"23/04/2020 11:05:12",
+	"scoref_j1":25,
+	"scoref_j2":42,
+	"reprise":15,
+}
+
+#du front vers le back
+{
+	"j1_add":1,
+	"j2_add":0,
+	"reprise_add":0
+}

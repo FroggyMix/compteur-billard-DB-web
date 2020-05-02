@@ -1,0 +1,106 @@
+@import 'variables.css';
+.formulaire{
+  max-width: 300px;
+/*   margin: 10px auto; */
+  padding: 10px 20px;
+  background: var(--formulaire-background);
+  border-radius: 8px;
+  max-width: 480px;
+  min-width: 300px;
+  margin-top:15px;
+}
+.formulaire h4{
+	line-height:2em;
+	font-size:2em;
+	color:var(--formulaire-titre-color);
+	font-weight:var(--formulaire-titre-weight);
+	text-align:center;
+}
+.formulaire label, p.datetime {
+  display: block;
+  margin-bottom: 8px;
+  /* font-family: 'Nunito', sans-serif; */
+  color: var(--formulaire-label-color);
+  font-weight:normal;
+  line-height: var(--formulaire-label-size);
+  font-size:var(--formulaire-label-size);
+  margin-top: 20px;
+}
+p.datetime {
+  font-weight:lighter;
+  font-size:80%;
+}
+
+.formulaire input[type="text"],
+.formulaire input[type="password"],
+.formulaire input[type="date"],
+.formulaire input[type="datetime"],
+.formulaire input[type="email"],
+.formulaire input[type="number"],
+.formulaire input[type="search"],
+.formulaire input[type="tel"],
+.formulaire input[type="time"],
+.formulaire input[type="url"],
+.formulaire textarea,
+.formulaire select 
+{
+  background: rgba(255,255,255,0.1);
+  border: none;
+  border-radius: 5px;
+  font-size: var(--formulaire-saisie-size);
+  height: auto;
+  margin: 0;
+  outline: 0;
+  padding: 10px;
+  width: 100%;
+  background-color: var(--formulaire-saisie-bkg);
+  color: var(--formulaire-saisie-color);
+  box-shadow: 0 1px 0 rgba(0,0,0,0.03) inset;
+  /* margin-bottom: 20px; */
+  /*border-bottom: 2px solid #ccc;*/
+}
+
+.formulaire input[type="text"].vTimeField,
+.formulaire input[type="text"].vDateField{width: 65%;}
+
+.formulaire input[type="radio"],
+.formulaire input[type="checkbox"] {
+  margin: 0 4px 8px 0;
+}
+
+.formulaire select {
+  padding: 6px;
+  height: calc(var(--formulaire-saisie-size)*1.7);
+  border-radius: 2px;
+}
+
+.formulaire input[type="submit"] {
+  display : block;
+  padding: 19px 39px 18px 39px;
+  color: var(--formulaire-bouton-color);
+  background-color: var(--formulaire-bouton-bkg-color);
+  font-size: 18px;
+  text-align: center;
+  font-style: normal;
+  border-radius: 5px;
+  width: 100%;
+  border: 1px solid #3ac162;
+  border-width: 1px 1px 3px;
+  box-shadow: 0 -1px 0 rgba(255,255,255,0.1) inset;
+  margin-bottom: 10px;
+  margin-top:20px;
+}
+.formulaire input[type=button] {
+
+  color: var(--formulaire-bouton-color);
+  background-color:var(--formulaire-bouton-bkg-color);
+}
+.formulaire .helptext{
+	font-style:italic;
+	font-size:0.8em;
+	text-align:right;
+}
+	
+@media screen and (max-width: 750px) {
+  .formulaire{width:100%;}
+}

@@ -1,0 +1,28 @@
+{% extends "gestionnaire/base.html"  %}
+ 
+{% block title %}
+    Matches - {{ block.super }}
+{% endblock %}
+ 
+{% block content %}    
+ 
+    <div class="content">
+        <div class="section-inner clearfix">        
+ 
+        {% for match in matchs %}
+            <h3>                        
+				<a href="{{ match.get_absolute_url }}">{{ match.d_debut }}</a>
+            </h3>
+            <p class="match-info">
+		<span>Jeu : {{ match.jeu_type|upper }}</span>
+		<span>Variante : <a href="{{match.jeu_variante.get_absolute_url }}">{{ match.jeu_variante.nom }}</a></span> |
+		<span> <a href="{{match.joueur1.get_absolute_url }}">{{ match.joueur1.nom }}</a> vs <a href="{{ match.joueur2.get_absolute_url }}">{{ match.joueur2.nom }}</a></span>|
+		<span>Terminé le : {{match.d_fin}} |</span>        
+		</p>
+        {% empty %}
+            <p>Il n'y a pas de match</p>
+        {% endfor %}    
+		</div>
+    </div>
+ 
+{% endblock %}

@@ -1,0 +1,26 @@
+{% extends "gestionnaire/base.html"  %}
+ 
+{% block title %}
+    Variantes de jeu - {{ block.super }}
+{% endblock %}
+ 
+{% block content %}    
+ 
+    <div class="content">
+        <div class="section-inner clearfix">        
+ 
+        {% for jv in jvs %}
+            <h3>                        
+                <a href="{{jv.get_absolute_url}}">{{ jv.code|capfirst }}</a>
+            </h3>
+            <p class="info-jeuvariantes">
+                <span>Nom : {{ jv.nom }} </span> |
+            </p>
+        {% empty %}
+            <p>Il n'y a pas de joueur dans la base</p>
+        {% endfor %}    
+ 
+        </div>
+    </div>
+ 
+{% endblock %}

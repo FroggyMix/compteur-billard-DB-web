@@ -1,0 +1,63 @@
+{% extends "gestionnaire/base.html"  %}
+ 
+{% block title %}
+   Frame {{frame.pk}} - {{ block.super }}
+{% endblock %}
+ 
+{% block content %}    
+ 
+    <div class="content">
+        <textarea id="cptj1" cols="10" rows="2">0</textarea><br>
+		{# <input id="chat-message-input" type="text" size="100"><br> #}
+		<input id="cptj1_add1_submit" type="button" value="+1">
+		<button onclick="myfun()">Try </button>
+		{{ frame_id|json_script:"frame-id" }}
+    </div>
+		<script>					
+			const frameId = JSON.parse(document.getElementById('frame-id').textContent);
+
+			const chatSocket = new WebSocket(
+				'ws://'
+				+ window.location.host
+				+ '/ws/frame/'
+				+ frameId
+				+ '/'
+			);
+
+			chatSocket.onmessage = function(e) {
+				const data = JSON.parse(e.data);
+				document.querySelector('#cptj1').value = (data.message + '\n');
+			};
+
+			chatSocket.onclose = function(e) {
+				console.error('Chat socket closed unexpectedly');
+			};
+
+			document.querySelector('#cptj1').focus();
+			//document.querySelector('#chat-message-input').onkeyup = function(e) {
+			//	if (e.keyCode === 13) {  // enter, return
+			//		document.querySelector('#chat-message-submit').click();
+			//	}
+			//};
+			
+			function myfun(){
+			window.alert("clic sur btn");
+			window.alert(document.querySelector('#cptj1_add1_submit').onclick)
+			}
+			
+ 			<!-- document.querySelector('#cptj1_add1_submit').onclick = function(){ -->
+				<!-- window.alert(frameId); -->
+			<!-- } -->
+ 			document.querySelector('#cptj1_add1_submit').onclick = function(e) {
+				//const messageInputDom = document.querySelector('#chat-message-input');
+				//const message = messageInputDom.value;
+				
+				chatSocket.send(JSON.stringify({
+					'messager': 1
+				}));
+				//messageInputDom.value = '';
+			};
+		</script>
+
+ 
+{% endblock %}

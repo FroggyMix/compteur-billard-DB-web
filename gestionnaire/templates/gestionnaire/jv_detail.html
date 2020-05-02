@@ -1,0 +1,26 @@
+{% extends "gestionnaire/base.html"  %}
+ 
+{% block title %}
+    Variante de jeu {{jv.pk}} - {{ block.super }}
+{% endblock %}
+ 
+{% block content %}    
+ 
+    <div class="content">
+        <div class="section-inner clearfix">        
+ 
+			<h1>Variante de jeu n°{{ jv.id }}</h1>
+			<p class="jv-info">
+				<span>code : {{ jv.code }} |</span>
+				<span>Description : {{ jv.description }}|</span>
+				<span>Règles : {{ jv.regles }}|</span>
+				<span><a href="{{ jv.regles_url }}">detail des règles</a>|</span>
+				| <span><a href="{% url 'jv_update' jv.slug  %}">Modifier</a></span>
+			</p>
+			<p>
+				{{ jv.content }}
+			</p>
+        </div>
+    </div>
+ 
+{% endblock %}
