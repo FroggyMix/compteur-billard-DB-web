@@ -42,7 +42,7 @@ class JeuVariantesForm(forms.ModelForm):
 		return self.cleaned_data['slug'].lower()
 
 class MatchForm(forms.ModelForm):
-	d_debut = forms.SplitDateTimeField(widget= widgets.AdminSplitDateTime(),label='Début du match',initial=datetime.now())
+	d_debut = forms.SplitDateTimeField(widget= widgets.AdminSplitDateTime(),label='Début du match',initial=datetime.now)
     
 	class Meta:
 		model = Match

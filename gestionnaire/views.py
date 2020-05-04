@@ -124,3 +124,8 @@ def admin_page(request):
 
 def frame_live(request, frame_id):
 	return render(request,'gestionnaire/frame_live.html',{'frame_id':frame_id})
+	
+	
+#debuggage pb de menudef
+def base(request):
+	return render(request,'gestionnaire/base.html')

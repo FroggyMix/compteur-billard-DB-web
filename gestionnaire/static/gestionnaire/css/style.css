@@ -22,6 +22,11 @@ body {
 	font-family: var(--body-font);
 	font-size:  var(--body-text-size);
 }
+footer {
+	display:flex;
+	background:var(--footer-bkg);
+	color:var(--footer-color);
+}
 
 .main_container{
   display:flex;

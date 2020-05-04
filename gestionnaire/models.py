@@ -91,6 +91,7 @@ class Match(models.Model):
 	# en_cours = models.BooleanField(default='False', help_text='Indique si le match est en cours ou non')
 	distanceFR_j1 = models.SmallIntegerField(blank=True, null=True,verbose_name='Distance joueur 1',help_text='Optionnel, ne concerne que la carambole')
 	distanceFR_j2 = models.SmallIntegerField(blank=True, null=True,verbose_name='Distance joueur 2',help_text='Optionnel, ne concerne que la carambole')
+	toss = models.SmallIntegerField(default=1,verbose_name='Joueur qui débutera',help_text='Saisir 1 ouu 2 en fonction du joueur qui commence')
 
 	def fullname_j1(self):
 		return "{p} {n}".format(p=self.joueur1.prenom.title(),n=self.joueur1.nom.upper())

@@ -8,7 +8,7 @@
   
   --formulaire-titre-color: #4CAF50;
   --formulaire-titre-weight:bolder;
-  --formulaire-titre-text-size:;
+  --formulaire-titre-text-size:1.1em;
   --formulaire-background:#f4f7f8;
   --formulaire-label-color:#384047;
   --formulaire-label-size:1.1em;
@@ -23,8 +23,14 @@
   --liste-color:#111;
   --liste-background:RGB(76,176,80,0.05);
   
-  --menu-background:;
-  --menu-color:;
-  --menu-selection-color:;
-  --menu-hover-color:;
+  --menu-background:#333;
+  --menu-color:#eee;
+  --menu-selection-bkg-color:#4CAF50;
+  --menu-hover-color:#333;
+  --menu-hover-bkg-color:#eee;
+  
+  --footer-bkg : var(--menu-background);
+  --footer-color : var(--menu-color);
+
+  
 }

@@ -31,38 +31,24 @@
 	<link rel="stylesheet" type="text/css" href="{% static 'gestionnaire/css/style_forms.css' %}">
 	<link rel="stylesheet" type="text/css" href="{% static 'gestionnaire/css/style_menu.css' %}">
 	<script src="{% static 'gestionnaire/js/jquery.js' %}"></script>
+	
+
 	{% block styles %}
 	{% endblock %}
 	
 </head>
 <body>
-	<header class="header">
-	  <div>
-	  <a href="" class="logo">Menu</a>
-	  <input class="menu-btn" type="checkbox" id="menu-btn" />
-	  <label class="menu-icon" for="menu-btn"><span class="navicon"></span></label>
-	  <ul class="menu">
-		<li><a href="/frame_liste" class="active">Jouer/Suivre</a></li>
-		<li><a href="/match_liste" >Matchs</a></li>
-		<li><a href="/joueur_liste">Joueurs</a></li>
-		<li><a href="/admin">Administrer</a></li>
-	  </ul>
-	  </div>
-	  </header>
- 
+	<!-- NB Le menu est appelé dans chaque template fils pour permettre de contextualiser et colorier l'element actif  -->
     {% block content %}
- 
     {% endblock %}
  
-    {% block footer %}
- 
+    {% block footer %} 
     <footer>
-        <div class="section-inner clearfix">
+        <div class="footer">
             <hr>
             <p>&copy; test Django</p>
         </div>
     </footer>
- 
     {% endblock %}
     {% block extra_js %}{% endblock extra_js %}
 </body>

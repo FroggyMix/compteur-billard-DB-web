@@ -5,9 +5,11 @@
 {% endblock %}
 
 
-{% block content %}    
+{% block content %}  
+	{% block header %}
+		{% include "gestionnaire/menu.html" with active="jouer"%}
+	{% endblock %}  
 <div class="main_container">
- 
     <div class="liste_content">
         <div class="liste">        
 			<h4> Frames en cours</h4>
@@ -16,8 +18,8 @@
 					<li class="en_cours">
 						<h3>{{ frame.match.joueur1.fullname }} vs {{ frame.match.joueur2.fullname }} : {{ frame.scoref_j1 }} - {{ frame.scoref_j2 }}</h3>
 						<p class="frame-info">
-						<span>A débuté le : {{ frame.d_debut }}</span>
-						<p><a href="{{ frame.get_absolute_url }}">jouer</a> | <a href="{{ frame.get_absolute_url }}/watch">regarder</a></p>
+							<span>A débuté le : {{ frame.d_debut }}</span>
+							<p><a href="{{ frame.get_absolute_url }}">jouer</a> | <a href="{{ frame.get_absolute_url }}/watch">regarder</a></p>
 						</p>
 					</li>
 				{% empty %}

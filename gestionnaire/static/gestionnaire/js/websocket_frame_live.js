@@ -14,6 +14,7 @@ var diff = 0
 var timerID = 0
 
 
+
 chatSocket.onmessage = function(e) {
 	const data = JSON.parse(e.data);
 	document.querySelector('#scoref_j1').textContent = (data.message.scoref_j1);

@@ -5,20 +5,26 @@
 {% endblock %}
  
 {% block content %}    
- 
-    <div class="content">
-        <div class="section-inner clearfix">         
-        {% for joueur in joueurs %}
-            <h3>                        
-                <a href="{{joueur.get_absolute_url }}">{{ joueur.nom|capfirst }}</a>
-            </h3>
-            <p class="info-joueur">
-                <span>Nom : {{ joueur.nom }} </span> |
-                <span>Prénom : {{ joueur.prenom }}</span> |
-            </p>
-        {% empty %}
-            <p>Il n'y a pas de joueur dans la base</p>
-        {% endfor %}    
+	{% block header %}
+		{% include "gestionnaire/menu.html" with active="joueur"%}
+	{% endblock %} 
+<div class="main_container">
+    <div class="liste_content">
+        <div class="liste">        
+			<h4> Frames en cours</h4>
+			<ul>        
+				{% for joueur in joueurs %}
+					<li class="en_cours">
+						<h3><a href="{{joueur.get_absolute_url }}">{{ joueur.nom|capfirst }}</a></h3>
+						<p class="info-joueur">
+							<span>Nom : {{ joueur.nom }} </span> |
+							<span>Prénom : {{ joueur.prenom }}</span> |
+						</p>
+				{% empty %}
+					<p>Il n'y a pas de joueur dans la base</p>
+				{% endfor %}    
+			</ul>
+			<span id="total"> 2 frames en cours</span>	
         </div>
     </div>
 	<div class="pagination">
@@ -36,4 +42,5 @@
 			</p>
 		</div>
 	</div>
+</div>
 {% endblock %}

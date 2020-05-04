@@ -61,7 +61,7 @@ ul li {  list-style-type: none;
   max-height: 0;
   transition: max-height .2s ease-out;
 }
-.header .menu .active {
+.header .menu .current {
 	background-color: #4CAF50;
   color: white;
 }

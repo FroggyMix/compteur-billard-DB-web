@@ -33,3 +33,8 @@ urlpatterns += [
 urlpatterns += [
 	url(r'^frame/(?P<frame_id>\d+)/$',views.frame_live,name='frame_live'),
 ]
+
+#Debuugage menu
+urlpatterns += [
+	url(r'^base/$',views.base,name='base'),
+]
