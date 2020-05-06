@@ -1,6 +1,5 @@
 @import 'variables.css';
 .formulaire{
-  max-width: 300px;
 /*   margin: 10px auto; */
   padding: 10px 20px;
   background: var(--formulaire-background);
@@ -49,7 +48,7 @@ p.datetime {
   border-radius: 5px;
   font-size: var(--formulaire-saisie-size);
   height: auto;
-  margin: 0;
+  margin: 5px;
   outline: 0;
   padding: 10px;
   width: 100%;
@@ -74,27 +73,31 @@ p.datetime {
   border-radius: 2px;
 }
 
-.formulaire input[type="submit"] {
-  display : block;
-  padding: 19px 39px 18px 39px;
+.formulaire input[type="submit"],.formulaire input[type=button] {
   color: var(--formulaire-bouton-color);
   background-color: var(--formulaire-bouton-bkg-color);
-  font-size: 18px;
+  display : block;
+  padding: 0.8em 2em 0.8em;
+  font-size: var(--formulaire-saisie-size);
   text-align: center;
   font-style: normal;
   border-radius: 5px;
   width: 100%;
-  border: 1px solid #3ac162;
-  border-width: 1px 1px 3px;
-  box-shadow: 0 -1px 0 rgba(255,255,255,0.1) inset;
-  margin-bottom: 10px;
-  margin-top:20px;
+  /* border: 1px solid #3ac162; */
+  /* border-width: 1px 1px 3px; */
+  /* box-shadow: 0 -1px 0 rgba(255,255,255,0.1) inset; */
+  /* margin-bottom: 10px; */
+  /* margin-top:20px; */
 }
 .formulaire input[type=button] {
 
   color: var(--formulaire-bouton-color);
   background-color:var(--formulaire-bouton-bkg-color);
 }
+.formulaire input[type="submit"]:hover,.formulaire input[type=button]:hover {
+  /* font-size: 2.0em; */
+background:#0D8F11;}
+   
 .formulaire .helptext{
 	font-style:italic;
 	font-size:0.8em;

@@ -11,13 +11,18 @@
 		"distanceFR_j2":"60",
 		"nom_joueur1":"S. Rapold",
 		"nom_joueur2":"F. Rapold"
+		"vainqueurm":-1,
 	},
+	"numf":2,
 	"h_debut":"23/04/2020 11:05:12",
 	"scoref_j1":"25",
 	"scoref_j2":"42",
 	"reprise":"15",
 	"joueur_actif":"1",
 	"break":"2",
+	"joueur_commence":1,
+	"reprise_egalisatrice":"maintenant,
+	"vainqueur":-1,
 }
 
 #du front vers le back

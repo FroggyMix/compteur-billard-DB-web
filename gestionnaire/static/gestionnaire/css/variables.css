@@ -1,10 +1,16 @@
 @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400&display=swap');
 
+@font-face {
+	font-family:"ChronometreGras";
+	src: url('/static/gestionnaire/fonts/DS-DIGIT.TTF');
+}
+
 :root
 {
   --body-background: #eee;
   --body-text-size:1.1em;
   --body-font:'Nunito', sans-serif;
+  --chrono-font:'ChonometreGras';
   
   --formulaire-titre-color: #4CAF50;
   --formulaire-titre-weight:bolder;
@@ -12,7 +18,7 @@
   --formulaire-background:#f4f7f8;
   --formulaire-label-color:#384047;
   --formulaire-label-size:1.1em;
-  --formulaire-bouton-color:#eee;
+  --formulaire-bouton-color:#fff;
   --formulaire-bouton-bkg-color:#4CAF50;
   --formulaire-saisie-bkg:#e8eeef;
   --formulaire-saisie-color:#8a97a0;

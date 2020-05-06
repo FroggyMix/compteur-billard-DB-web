@@ -10,8 +10,10 @@
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{% block title %}Billard{% endblock %}</title>       
-	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans">
     {% load static %}
+	<link rel="stylesheet" type="text/css" href="{% static 'gestionnaire/css/reset.css' %}">
+	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans">
+    
 	<!--Pour ajouter dans les formulaires les datetime picker de l'administration-->
 	<link rel="stylesheet" type="text/css" href="{% static 'admin/css/forms.css' %} "/>
 	<link rel="stylesheet" type="text/css" href="{% static 'admin/css/base.css' %} "/>
@@ -26,7 +28,6 @@
 	<script type="text/javascript" src="{% static 'admin/js/calendar.js' %}"></script>
 	<script type="text/javascript" src="{% static 'admin/js/admin/DateTimeShortcuts.js' %}"></script>
 	<!--FIN Pour ajouter dans les formulaires les datetime picker de l'administration-->
-    <link rel="stylesheet" type="text/css" href="{% static 'gestionnaire/css/reset.css' %}">
 	<link rel="stylesheet" type="text/css" href="{% static 'gestionnaire/css/style.css' %}">
 	<link rel="stylesheet" type="text/css" href="{% static 'gestionnaire/css/style_forms.css' %}">
 	<link rel="stylesheet" type="text/css" href="{% static 'gestionnaire/css/style_menu.css' %}">

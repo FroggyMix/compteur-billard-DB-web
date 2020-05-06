@@ -5,6 +5,8 @@ from channels.generic.websocket import AsyncWebsocketConsumer
 import simplejson
 from gestionnaire.frame_state import frame_states
 from gestionnaire.models import *
+#from datetime import datetime
+from django.utils import timezone
 
 
 #from channels import Group
@@ -57,9 +59,33 @@ class FrameConsumer_sync(WebsocketConsumer):
 			#la main passe et éventuellement on incrémente
 			joueur=text_data_json['joueur']
 			FrameEvent.objects.create(event_type=EventType.objects.get(nom='pass'),frame=Frame.objects.get(pk=self.frame_id),crediteur=joueur)
+			#On detecte la fin de la frame
+			temp = Frame.objects.get(pk=self.frame_id).frame_terminee()
+			temp = Frame.objects.get(pk=self.frame_id).match.match_termine()
+			####todo on detecte la fin du match
+			
 			print ('Le joueur {} a passé la main.'.format(joueur))
+			
+		if text_data_json['action'] == 'toss':
+			#Le toss a décidé du joueur qui commence : on le log dans les evt et date le debut de la frame (voire du match)
+			joueur=text_data_json['joueur']
+			print("Le toss est fait")
+			# A mettre dans models.py
+			FrameEvent.objects.create(event_type=EventType.objects.get(nom='toss-engage'),frame=Frame.objects.get(pk=self.frame_id),crediteur=joueur)
+			Frame.objects.filter(pk=self.frame_id).update(d_debut=timezone.localtime(timezone.now()))
+			if Frame.objects.get(pk=self.frame_id).match.d_debut is None:
+				Match.objects.filter(id=Frame.objects.get(pk=self.frame_id).match.pk).update(d_debut=timezone.localtime(timezone.now()))	
+			print('Le joueur {} engage la première frame (toss).'.format(joueur))
 		
-		#On met à jour tous lesscoreboerd qui suivent cette frame
+		if text_data_json['action'] == 'start':
+			#frame.num>1 le joueur vient d'engager
+			joueur=text_data_json['joueur']
+			FrameEvent.objects.create(event_type=EventType.objects.get(nom='engage'),frame=Frame.objects.get(pk=self.frame_id),crediteur=joueur)
+			Frame.objects.filter(pk=self.frame_id).update(d_debut=timezone.localtime(timezone.now()))
+			print('Le joueur {} engage la {}ème frame (start).'.format(joueur,Frame.objects.get(pk=self.frame_id).num))
+		
+		
+		#On met à jour tous les scoreboards qui suivent cette frame
 		async_to_sync(self.channel_layer.group_send)(self.frame_group_name,{'type': 'score_message','message':frame_states(self.frame_id)})
 
 	def score_message(self,event):

@@ -9,12 +9,7 @@
 	{% endif %}
     <form action="" method="post">
         {% csrf_token %}
-        <table>
-            {{ form.as_p }}
-            <tr>
-                <td></td>
-                <td><input type="submit"></td>
-            </tr>
-        </table>
+        {{ form.as_p }}
+		<input type="submit" value="Créer le match">
     </form>
 </div>

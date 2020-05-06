@@ -1,4 +1,5 @@
 @import 'variables.css';
+
 /*DEBUGGAGE*/
 /* div {border:0.2mm dashed red;} */
 /* p {border:0.2mm dashed green;} */
@@ -102,6 +103,8 @@ section {
 
 .frame_reprise, .scoref {cursor: pointer;}
 
+.scoref, .reprise {font-family:"ChronometreGras"/*var(--chrono-font)*/;}
+
 /*************************************************/
 /* RESPONSIVE */
 /*************************************************/
@@ -125,5 +128,30 @@ section {
   .scoref {line-height:60vmin; font-size:60vmin;}	
 	}
 	
-
-
+/*On force les formulaires à s'ecrire sur la même ligne*/
+.formulaire li{
+  display:  inline-block;
+} 
+.formulaire{
+  padding: 10px 20px;
+  background: var(--formulaire-background);
+  border-radius: 8px;
+  max-width: 100%;
+  min-width: 400px;
+  margin-top:15px;
+}
+.formulaire input[type="text"],
+.formulaire input[type="password"],
+.formulaire input[type="date"],
+.formulaire input[type="datetime"],
+.formulaire input[type="email"],
+.formulaire input[type="number"],
+.formulaire input[type="search"],
+.formulaire input[type="tel"],
+.formulaire input[type="time"],
+.formulaire input[type="url"],
+.formulaire textarea,
+.formulaire select 
+{
+	width:auto;
+}
