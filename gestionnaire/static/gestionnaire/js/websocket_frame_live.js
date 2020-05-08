@@ -13,24 +13,28 @@ var end = 0
 var diff = 0
 var timerID = 0
 var frame_terminee = false
+const queryString = window.location.search;
+const urlParams = new URLSearchParams(queryString);
+var temp='arbitre' 
+if (urlParams.get('ref')=="false"){temp='spectateur';}
+const demandeur=temp
 
 
 chatSocket.onmessage = function(e) {
 	const data = JSON.parse(e.data);
-	//On gère ensuite le cas où le match vient de commencer (i.e. : joueur_commence=-1)
-	var joueur_actif = (data.message.joueur_actif);
-	if (data.message.h_debut) {
-			//window.alert("le jouer qui a engagé : "+data.message.joueur_commence)
-	}
-	else{
-		if (data.message.numf == 1){
-			toss_modal.showModal();
+	//on ferme toutes les modales de dialog (synchro des viewers)
+	//window.alert(document.getElementById("toss_modal").style.display)
+	/*if (demandeur=='spectateur'){
+		try {
+			//if (document.getElementById("start_modal").style.display == "block"){start_modal.close('obsolete');}
+			document.getElementById("toss_modal").style.display = "none";
+			//if (document.getElementById("info_modal").style.display == "block"){info_modal.close('obsolete');}
+		} catch (error) {
+			//on ne fait rien
 		}
-		else{
-			document.getElementById('message_modal').innertext ="Cliquer sur le bouton ci-dessous lorsque le joueur "+joueur_actif+" est prêt à engager"
-			start_modal.showModal();
-		}	
-	}
+	}*/
+	
+
 	document.querySelector('#scoref_j1').textContent = (data.message.scoref_j1);
 	document.querySelector('#scoref_j2').textContent = (data.message.scoref_j2);
 	document.querySelector('#moyennef_j1').textContent = Math.round(1000*parseInt(data.message.scoref_j1)/parseInt(data.message.reprise))/1000;
@@ -66,25 +70,48 @@ chatSocket.onmessage = function(e) {
 	if (hmm.length<2){hmm="0"+hmm}
 	document.querySelector('#match_timer').textContent = hmh+":"+hmm;
 	
-	// Reprise égalisatrice
-	if (data.message.reprise_egalisatrice == "maintenant"){
-		window.alert("reprise égalisatrice")
-	}
-	if (data.message.reprise_egalisatrice == "prochain"){
-		window.alert("dernier coup")
-	}
-	//Fin de frame
-	if (data.message.vainqueurf >= 0){
-		frame_terminee = true;
-		if (data.message.vainqueurf == 1) {window.alert("frame gagnée par joueur 1")}
-		if (data.message.vainqueurf == 2) {window.alert("frame gagnée par joueur 2")}
-		if (data.message.vainqueurf == 0) {window.alert("Egalité !! je ne sais pas quoi faire")}	
-	}
-	//Fin de match
-	if (data.message.match.vainqueurm > 0){
-		frame_terminee = true;
-		if (data.message.match.vainqueurm == 1) {window.alert("Match gagnée par joueur 1")}
-		if (data.message.match.vainqueurm == 2) {window.alert("Match gagnée par joueur 2")}
+	if (demandeur == 'arbitre'){
+		//On gère ensuite le cas où le match vient de commencer (i.e. : joueur_commence=-1)
+		var joueur_actif = (data.message.joueur_actif);
+		if (data.message.h_debut) {
+				//window.alert("le jouer qui a engagé : "+data.message.joueur_commence)
+		}
+		else{
+			if (data.message.numf == 1){
+				toss_modal.showModal();
+			}
+			else{
+				document.getElementById('message_start_modal').innerText ="Cliquer sur le bouton ci-dessous lorsque le joueur "+joueur_actif+" est prêt à engager"
+				start_modal.showModal();
+			}	
+		}
+		// Reprise égalisatrice
+		if (data.message.reprise_egalisatrice == "maintenant"){
+			//window.alert("reprise égalisatrice")
+			document.getElementById('message_info_modal').innerText ="Reprise égalisatrice pour le joueur "+joueur_actif;
+			info_modal.showModal();
+		}
+		if (data.message.reprise_egalisatrice == "prochain"){
+			document.getElementById('message_info_modal').innerText ="Dernier coup pour le joueur "+joueur_actif;
+			info_modal.showModal();
+		}
+		//Fin de frame
+		if (data.message.vainqueurf >= 0){
+			frame_terminee = true;
+			// if (data.message.vainqueurf == 1) {window.alert("frame gagnée par joueur 1")}
+			// if (data.message.vainqueurf == 2) {window.alert("frame gagnée par joueur 2")}
+			// if (data.message.vainqueurf == 0) {window.alert("Egalité !! je ne sais pas quoi faire")}	
+			if (data.message.vainqueurf == 1) {document.getElementById('message_info_modal').innerText ="frame gagnée par joueur 1"}
+			if (data.message.vainqueurf == 2) {document.getElementById('message_info_modal').innerText ="frame gagnée par joueur 2"}
+			if (data.message.vainqueurf == 0) {document.getElementById('message_info_modal').innerText ="Egalité !! je ne sais pas quoi faire"}
+			info_modal.showModal();
+		}
+		//Fin de match
+		if (data.message.match.vainqueurm > 0){
+			frame_terminee = true;
+			if (data.message.match.vainqueurm == 1) {window.alert("Match gagnée par joueur 1")}
+			if (data.message.match.vainqueurm == 2) {window.alert("Match gagnée par joueur 2")}
+		}
 	}
 
 	if (data.message.match.vainqueurm <= 0 && data.message.vainqueurf >= 0){
@@ -121,6 +148,7 @@ document.querySelector('#maj_scores_submit').onclick = function(e) {
 };
 document.querySelector('#scoref_j1').onclick = function(e) {
 	if (get_joueur_actif() == 1 && frame_terminee == false) {
+		JouerSon("son-point");
 		const score_j1_DOM = document.querySelector('#scoref_j1');
 		chatSocket.send(JSON.stringify({
 			'action': 'score',
@@ -131,6 +159,7 @@ document.querySelector('#scoref_j1').onclick = function(e) {
 };
 document.querySelector('#scoref_j2').onclick = function(e) {
 	if (get_joueur_actif() == 2 && frame_terminee == false) {
+		JouerSon("son-point");
 		const score_j2_DOM = document.querySelector('#scoref_j2');
 		chatSocket.send(JSON.stringify({
 			'action': 'score',
@@ -142,6 +171,7 @@ document.querySelector('#scoref_j2').onclick = function(e) {
 document.querySelector('#frame_reprise').onclick = function(e) {
 	
 	if (frame_terminee == false){
+		JouerSon("son-reprise");
 		const score_reprise_DOM = document.querySelector('#frame_reprise'); 
 		chatSocket.send(JSON.stringify({
 			'action': 'pass',
@@ -202,4 +232,10 @@ function force_joueur_actif(j,break_j){
 		document.querySelectorAll('.droite')[0].classList.add('joueur_actif')
 		document.querySelector('#break_j2').textContent=break_j;
 	}
+}
+function JouerSon(nom_son) {
+	        var sound = document.getElementById(nom_son);
+			// window.alert(sound.innerhtml)
+    
+            sound.play()
 }

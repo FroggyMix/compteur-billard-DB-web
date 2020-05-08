@@ -26,14 +26,16 @@ def match_liste(request):
 	matchs = helpers.pg_records(request, matchs, 10) #Pagination
 	return render(request, 'gestionnaire/match_liste.html', {'matchs':matchs})
 
-def frame_liste(request):
-	framesEC=Frame.objects.frame_en_cours()
-	framesAV=Frame.objects.frame_a_venir()
-	context = {
-		'framesEC':framesEC,
-		'framesAV':framesAV
-	}
-	return render(request, 'gestionnaire/frame_liste.html', context)
+# def frame_liste(request):
+	# framesEC=Frame.objects.frame_en_cours()
+	# framesAV=Frame.objects.frame_a_venir()
+	# framesRT=Frame.objects.frame_terminee()
+	# context = {
+		# 'framesEC':framesEC,
+		# 'framesAV':framesAV,
+		# 'framesRT':framesRT,
+	# }
+	# return render(request, 'gestionnaire/frame_liste.html', context)
 	
 def frame_liste(request):
 	if request.method == "POST":
@@ -48,9 +50,12 @@ def frame_liste(request):
 		f = MatchForm()
 		framesEC=Frame.objects.frame_en_cours()
 		framesAV=Frame.objects.frame_a_venir()
+		framesRT=Frame.objects.frame_terminee()
+
 		context = {
 			'framesEC':framesEC,
 			'framesAV':framesAV,
+			'framesRT':framesRT,
 			'form': f
 		}
 		return render(request, 'gestionnaire/frame_liste.html', context)

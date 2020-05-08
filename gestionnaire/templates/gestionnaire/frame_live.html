@@ -21,6 +21,14 @@
 	{% block header %}
 		{% include "gestionnaire/menu.html" with active="jouer"%}
 	{% endblock %}
+<!-- <audio autoplay="false" id="son-point" src="http://s1download-universal-soundbank.com/mp3/sounds/18538.mp3"></audio> -->
+<!-- <audio autoplay="false" id="son-reprise" src="http://s1download-universal-soundbank.com/mp3/sounds/18544.mp3"></audio> -->
+<!-- <audio autoplay="false" id="son-reprise">  -->
+	<!-- <source src="http://192.168.1.28:8000/media/sound/message.mp3" type="audio/mp3"> -->
+<!-- </audio> -->
+<audio autoplay="false" id="son-reprise" src="http://192.168.1.28:8000/media/sound/woosh4_court.mp3"></audio>
+<audio autoplay="false" id="son-point" src="http://192.168.1.28:8000/media/sound/message_court.mp3"></audio>
+
 
 	<div class="frame_top">
 
@@ -106,12 +114,24 @@
 <dialog id="start_modal" >
   <h3 class="modal-header">Toss</h3>
   <div class="modal-body">
-    <p id="message_modal">Message</p>
+    <p id="message_start_modal">Message</p>
   </div>
   <footer class="modal-footer">
     <button id="start_OK" type="button">Démarrer la frame</button>
   </footer>
   <button id="start_close" class="close" type="button">&times;</button>
+</dialog>
+<!-- fin Fenêtre modale Start -->
+<!-- Fenêtre modale Info_ok -->
+<dialog id="info_modal" >
+  <h3 class="modal-header">Toss</h3>
+  <div class="modal-body">
+    <p id="message_info_modal">Message</p>
+  </div>
+  <footer class="modal-footer">
+    <button id="info_OK" type="button">OK</button>
+  </footer>
+  <button id="info_close" class="close" type="button">&times;</button>
 </dialog>
 <!-- fin Fenêtre modale Start -->
 

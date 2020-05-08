@@ -58,9 +58,9 @@ section{ /*AJOUT FLEX MEDIAQ*/
 
 /*Différence joueur droite/gauche*/
 .droite{text-align:left}
-.droite .nom{justify-content:start;}
+.droite .nom{justify-content:start;color:#FFCC33;}
 .gauche{text-align:right}
-.gauche .nom{justify-content:end;}
+.gauche .nom{justify-content:end;color:#fff;}
 
 .actions_wrapper{
 	padding:10px;

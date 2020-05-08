@@ -63,6 +63,7 @@ footer {
 
 .liste{
   background: whitesmoke;
+  min-width:50vw;
 /*   position: absolute; */
 /*   left: 50%; */
 /*   margin-left: -175px; */
@@ -108,11 +109,20 @@ margin-top:15px;
       #EEE 11px,
       transparent 11px);
 }
-.liste .non_en_cours{
+.liste .a_venir{
 	  background-image: 
     linear-gradient(
       90deg,
       #C97F42 10px,
+      #EEE 10px,
+      #EEE 11px,
+      transparent 11px);
+}
+.liste .terminees{
+	  background-image: 
+    linear-gradient(
+      90deg,
+      #0099FF 10px,
       #EEE 10px,
       #EEE 11px,
       transparent 11px);

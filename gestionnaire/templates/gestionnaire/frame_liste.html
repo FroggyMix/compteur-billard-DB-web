@@ -19,7 +19,7 @@
 						<h3>{{ frame.match.joueur1.fullname }} vs {{ frame.match.joueur2.fullname }} : {{ frame.scoref_j1 }} - {{ frame.scoref_j2 }}</h3>
 						<p class="frame-info">
 							<span>A débuté le : {{ frame.d_debut }}</span>
-							<p><a href="{{ frame.get_absolute_url }}">jouer</a> | <a href="{{ frame.get_absolute_url }}/watch">regarder</a></p>
+							<p><a href="{{ frame.get_absolute_url }}?ref=true">jouer</a> | <a href="{{ frame.get_absolute_url }}?ref=false">regarder</a></p>
 						</p>
 					</li>
 				{% empty %}
@@ -29,13 +29,13 @@
 			<span id="total"> 2 frames en cours</span>	
 		</div>
 
-
         <div class="liste">        
 			<h4> Frames à venir</h4>
 			<ul>
 				{% for frame in framesAV %}
-					<li class="non_en_cours">
-						<h3>{{ frame }}</h3><a href="{{ frame.get_absolute_url }}">jouer</a>
+					<li class="a_venir">
+						<h3>{{ frame }}</h3>
+						<a href="{{ frame.get_absolute_url }}?ref=true">jouer</a> | <a href="{{ frame.get_absolute_url }}?ref=false">regarder</a>
 						<p class="frame-info">
 						{% if frame.d_debut %}
 							<span>Date prévue : {{ frame.d_debut }}</span>|
@@ -48,7 +48,26 @@
 			</ul>
 			<span id="total"> 3 frames à venir</span>	
 		</div>
-    </div>
+		
+        <div class="liste">        
+			<h4> Dernières frames terminées</h4>
+			<ul>
+				{% for frame in framesRT %}
+					<li class="terminees">
+						<h3>{{ frame }}</h3><a href="{{ frame.get_absolute_url }}?ref=false">jouer</a>
+						<p class="frame-info">
+						{% if frame.d_debut %}
+							<span>Date prévue : {{ frame.d_debut }}</span>|
+						{% endif %}
+						</p>
+					</li>
+				{% empty %}
+					<p>Aucune frame terminée, faudrait peut-être jouer !</p>
+				{% endfor %}
+			</ul>
+			<span id="total"> 3 frames à venir</span>	
+		</div>
+	</div>
  
 {% include 'gestionnaire/match_add.html' %}
 </div>
