@@ -59,7 +59,8 @@ class FrameConsumer_sync(WebsocketConsumer):
 			#la main passe et éventuellement on incrémente
 			joueur=text_data_json['joueur']
 			FrameEvent.objects.create(event_type=EventType.objects.get(nom='pass'),frame=Frame.objects.get(pk=self.frame_id),crediteur=joueur)
-			#On detecte la fin de la frame
+			#On lance les traitements de reprise egalisatrice, de fin de frame et de match
+			temp = Frame.objects.get(pk=self.frame_id).reprise_egalisatrice_detecte()
 			temp = Frame.objects.get(pk=self.frame_id).frame_terminee()
 			temp = Frame.objects.get(pk=self.frame_id).match.match_termine()
 			####todo on detecte la fin du match

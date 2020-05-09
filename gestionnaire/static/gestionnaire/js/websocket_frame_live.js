@@ -21,19 +21,7 @@ const demandeur=temp
 
 
 chatSocket.onmessage = function(e) {
-	const data = JSON.parse(e.data);
-	//on ferme toutes les modales de dialog (synchro des viewers)
-	//window.alert(document.getElementById("toss_modal").style.display)
-	/*if (demandeur=='spectateur'){
-		try {
-			//if (document.getElementById("start_modal").style.display == "block"){start_modal.close('obsolete');}
-			document.getElementById("toss_modal").style.display = "none";
-			//if (document.getElementById("info_modal").style.display == "block"){info_modal.close('obsolete');}
-		} catch (error) {
-			//on ne fait rien
-		}
-	}*/
-	
+	const data = JSON.parse(e.data);	
 
 	document.querySelector('#scoref_j1').textContent = (data.message.scoref_j1);
 	document.querySelector('#scoref_j2').textContent = (data.message.scoref_j2);
@@ -51,9 +39,7 @@ chatSocket.onmessage = function(e) {
 	var break_j = (data.message.break);
 	//window.alert(joueur_actif)
 	
-	if (joueur_actif != "0"){
-		force_joueur_actif(joueur_actif,break_j);
-	}
+	if (joueur_actif != "0"){force_joueur_actif(joueur_actif,break_j);}
 	
 	//Gestion du chrono de frame : TODO optimisable? en ne relançant pas le chronoo à cchaque arrivée de ws ?
 	const hui=new Date();
@@ -101,27 +87,32 @@ chatSocket.onmessage = function(e) {
 			// if (data.message.vainqueurf == 1) {window.alert("frame gagnée par joueur 1")}
 			// if (data.message.vainqueurf == 2) {window.alert("frame gagnée par joueur 2")}
 			// if (data.message.vainqueurf == 0) {window.alert("Egalité !! je ne sais pas quoi faire")}	
-			if (data.message.vainqueurf == 1) {document.getElementById('message_info_modal').innerText ="frame gagnée par joueur 1"}
-			if (data.message.vainqueurf == 2) {document.getElementById('message_info_modal').innerText ="frame gagnée par joueur 2"}
-			if (data.message.vainqueurf == 0) {document.getElementById('message_info_modal').innerText ="Egalité !! je ne sais pas quoi faire"}
+			var texte="Frame ";
+			if (data.message.match.vainqueurm > 0){
+				frame_terminee = true;
+				texte="Frame et Match ";
+			}
+			if (data.message.vainqueurf == 1) {document.getElementById('message_info_modal').innerText =texte+"pour joueur 1"}
+			if (data.message.vainqueurf == 2) {document.getElementById('message_info_modal').innerText =texte+"pour joueur 2"}
+			if (data.message.vainqueurf == 0) {document.getElementById('message_info_modal').innerText ="Egalité !! je ne sais pas (encore) quoi faire"}
 			info_modal.showModal();
 		}
 		//Fin de match
-		if (data.message.match.vainqueurm > 0){
-			frame_terminee = true;
-			if (data.message.match.vainqueurm == 1) {window.alert("Match gagnée par joueur 1")}
-			if (data.message.match.vainqueurm == 2) {window.alert("Match gagnée par joueur 2")}
-		}
+		// if (data.message.match.vainqueurm > 0){
+			// frame_terminee = true;
+			// if (data.message.match.vainqueurm == 1) {window.alert("Match gagnée par joueur 1")}
+			// if (data.message.match.vainqueurm == 2) {window.alert("Match gagnée par joueur 2")}
+		// }
 	}
-
-	if (data.message.match.vainqueurm <= 0 && data.message.vainqueurf >= 0){
-		if (confirm('Voulez-vous lancer la frame suivante ?')) {
-			window.location.replace("http://192.168.1.28:8000/frame/"+data.message.numf+1+"/");
-		}
-		else{
-			window.location.replace("http://192.168.1.28:8000/frame_liste");
-		}
-	}
+	if (data.message.nextf){window.location.replace("http://192.168.1.28:8000/frame/"+data.message.nextf+"/?ref="+urlParams.get('ref'));}
+	// if (data.message.match.vainqueurm <= 0 && data.message.vainqueurf >= 0){
+		// if (confirm('Voulez-vous lancer la frame suivante ?')) {
+			// window.location.replace("http://192.168.1.28:8000/frame/"+data.message.numf+1+"/");
+		// }
+		// else{
+			// window.location.replace("http://192.168.1.28:8000/frame_liste");
+		// }
+	// }
 };
 
 chatSocket.onclose = function(e) {
@@ -168,7 +159,8 @@ document.querySelector('#scoref_j2').onclick = function(e) {
 		}));
 	}
 };
-document.querySelector('#frame_reprise').onclick = function(e) {
+// document.querySelector('#frame_reprise').onclick = function(e) {
+document.querySelector('section.reprise').onclick = function(e) {
 	
 	if (frame_terminee == false){
 		JouerSon("son-reprise");
@@ -198,7 +190,6 @@ function chrono_frame(){
 	document.querySelector('#frame_timer').textContent = hr + ":" + min //+ ":" + sec
 	timerID = setTimeout("chrono_frame()", 60000)
 }
-
 function ws_envoi_toss(numjoueur){	 
 	chatSocket.send(JSON.stringify({
 		'action': 'toss',
@@ -211,8 +202,6 @@ function ws_envoi_start(){
 		'joueur': get_joueur_actif(),
 	}));
 }	
-
-
 function get_joueur_actif(){
 	const joueur1actif = $('section.joueur.gauche').hasClass('joueur_actif');
 	var joueur_actif=2;
@@ -221,7 +210,6 @@ function get_joueur_actif(){
 	}
 	return joueur_actif
 }
-
 function force_joueur_actif(j,break_j){
 	document.querySelector('.joueur_actif').classList.remove('joueur_actif')
 	if (j == '1'){

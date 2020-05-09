@@ -17,8 +17,8 @@ def frame_states(frame_id):
 			"nom_joueur2":fr.match.joueur2.fullname_score_board(),
 			"vainqueurm":fr.match.vainqueurm(),
 			},
-		#"next_frame_id":33
 		"numf":fr.num,
+		"nextf":fr.next_frame_existe(),
 		"h_debut":fr.heure_debut(),
 		"scoref_j1":fr.scoref_j1(),
 		"scoref_j2":fr.scoref_j2(),
@@ -26,7 +26,8 @@ def frame_states(frame_id):
 		"joueur_actif":fr.joueur_actif(),
 		"break":fr.break_en_cours(),
 		"joueur_commence":fr.debutant(),
-		"reprise_egalisatrice":fr.reprise_egalisatrice_now(),
+		# "reprise_egalisatrice":fr.reprise_egalisatrice_now(),
+		"reprise_egalisatrice":fr.reprise_egalisatrice(),
 		"vainqueurf":fr.vainqueurf(),		
 		}
 	return(etat_json)

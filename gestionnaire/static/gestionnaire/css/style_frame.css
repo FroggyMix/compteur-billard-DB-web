@@ -70,7 +70,14 @@ section{ /*AJOUT FLEX MEDIAQ*/
 
 .reprise{background-color:#bbb;color:#333;}
 
-
+.tab-outils {
+	position : relative;
+	left:0px;
+	top:0px;
+	width:100px;
+	height:50px;
+	background:#CC33FF;	
+}
 /*************************************************/
 /* DECORATION */
 /*************************************************/

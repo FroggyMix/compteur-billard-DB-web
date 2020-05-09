@@ -106,7 +106,7 @@ class Match(models.Model):
 	def reprises_limitees(self): #lecture
 		return  (self.fr_limite_nb_reprises is not None)
 	def besoin_de_reprise_egalisatrice(self): #lecture
-		return (self.fr_limite_nb_reprises is not None or self.fr_reprise_egalisatrice is not None)	
+		return (self.fr_limite_nb_reprises is not None or self.fr_reprise_egalisatrice)	
 	def scorem_j1(self): #lecture
 		return FrameEvent.objects.filter(frame__in=Frame.objects.filter(match=self)).filter(crediteur=1, event_type__nom='victoire-frame').count()
 	def scorem_j2(self): #lecture
@@ -136,7 +136,8 @@ class Match(models.Model):
 				#c'est la fin du match
 				if self.d_fin is None: Match.objects.filter(pk=self.pk).update(d_fin=timezone.localtime(timezone.now()))
 				#on determine la frame du match dans laquelle il faut ecrire la fin de match
-				if not frameevent_exists('victoire-match'):
+				fr = Frame.objects.filter(match=self).order_by('-num').first()
+				if not fr.frameevent_exists('victoire-match'):
 					fr = Frame.objects.filter(match=self).order_by('-num').first()
 					FrameEvent.objects.create(event_type=EventType.objects.get(nom='victoire-match'),frame=fr,crediteur=vainqueurm)
 	class Meta:
@@ -170,7 +171,7 @@ class FrameManager(models.Manager):
 			return None
 		
 class Frame(models.Model):
-	match = models.ForeignKey(Match, on_delete=models.PROTECT, db_column='Match_id')  # Field name made lowercase.
+	match = models.ForeignKey(Match, on_delete=models.CASCADE, db_column='Match_id')  # Field name made lowercase.
 	d_debut = models.DateTimeField(blank=True, null=True)
 	d_fin = models.DateTimeField(blank=True, null=True)
 	num = models.SmallIntegerField(default=1,verbose_name='Numéro de la frame dans le match')
@@ -264,20 +265,23 @@ class Frame(models.Model):
 			return vainqueur.first()
 		else:
 			return -1
-	def reprise_egalisatrice_now(self): #ECRITURE
-		print('>>>>>>>>>>>> Calcul de la reprise egalisatrice')
+	def reprise_egalisatrice_detecte(self): #ECRITURE
+		# print('>>>>>>>>>>>> Calcul de la reprise egalisatrice')
 		#print(self.reprise_egalisatrice_existe())
 		dernier_evt = FrameEvent.objects.filter(frame=self).order_by('-d_horodatage').values_list('event_type__nom',flat=True).first()
 		if dernier_evt == 'pass':
-			print('>>>>>>>> il n existe as encore de reprise egalisatrice')
+			# print('>>>>>>>> il n existe as encore de reprise egalisatrice')
 			if self.match.reprises_limitees():
-				print('>>>>> match à Reprise limitée')
-				print(self.reprise())
-				print(self.match.fr_limite_nb_reprises)
-				if self.scoref_j1() < self.match.fr_distance_j1 and self.scoref_j2() < self.match.fr_distance_j1 and self.reprise() >= self.match.fr_limite_nb_reprises:
+				# print('>>>>> match à Reprise limitée')
+				# print(self.reprise())
+				# print(self.match.fr_limite_nb_reprises)
+				dist1 = 999999 if not self.match.fr_distance_j1 else self.match.fr_distance_j1
+				dist2 = 999999 if not self.match.fr_distance_j2 else self.match.fr_distance_j2
+				if self.scoref_j1() < dist1 and self.scoref_j2() < dist2 and self.reprise() >= self.match.fr_limite_nb_reprises:
 					print('>> Aucun joueur na atteint sa cible mais la reprise sa limite')
 					if self.joueur_actif() == self.engageur_frame():
 						#On informe que le joueur actif joue son dernier coup
+						if not self.frameevent_exists('dernier-coup'):FrameEvent.objects.create(event_type=EventType.objects.get(nom='dernier-coup'),frame=self,crediteur=self.joueur_actif())
 						return "prochain"
 					else:
 						#On enregistre et informe de la reprise égalisatrice (à consition quelle n'ait pas déjà été enregistrée)
@@ -285,7 +289,11 @@ class Frame(models.Model):
 							FrameEvent.objects.create(event_type=EventType.objects.get(nom='reprise-egalisatrice'),frame=self,crediteur=self.joueur_actif())
 							return "maintenant"			
 			score_engageur = self.scoref_j1() if self.engageur_frame()==1 else self.scoref_j2()
-			dist_engageur = self.match.fr_distance_j1 if self.engageur_frame()==1 else self.match.fr_distance_j1
+			if self.engageur_frame()==1:
+				dist_engageur = self.match.fr_distance_j1 if self.match.fr_distance_j1 else 999999
+			else:
+				dist_engageur = self.match.fr_distance_j2 if self.match.fr_distance_j2 else 999999
+				
 			if self.match.besoin_de_reprise_egalisatrice() and score_engageur >= dist_engageur:
 				print('>>>>>>>> match à Reprise egalisatrice avec engageur qui a atteint son score')				
 				if not self.reprise_egalisatrice_existe():
@@ -298,7 +306,7 @@ class Frame(models.Model):
 		return  not (FrameEvent.objects.filter(frame=self,event_type__nom='reprise-egalisatrice').count() == 0)			
 	def frame_terminee(self): #ECRITURE
 		### Renvoie 
-		print('>>>>>>>>>>>> Calcul de la fin de frame')
+		# print('>>>>>>>>>>>> Calcul de la fin de frame')
 		dernier_evt = FrameEvent.objects.filter(frame=self).order_by('-d_horodatage').values_list('event_type__nom',flat=True).first()
 		joueur_vainqueur=''
 		# print(dernier_evt)
@@ -308,33 +316,24 @@ class Frame(models.Model):
 				id_autre = 3-self.engageur_frame()
 				if id_autre == 1:
 					score_autre = self.scoref_j1()
-					dist_autre = self.match.fr_distance_j1
+					dist_autre = 999999 if not self.match.fr_distance_j1 else self.match.fr_distance_j1
 				else:
 					score_autre = self.scoref_j2()
-					dist_autre = self.match.fr_distance_j2
-				print('>>>>>>>>>> pas encore de vainqueur et "pass"')
-				print(self.match.besoin_de_reprise_egalisatrice())
-				print(self.reprise_egalisatrice_existe())
-				print(not self.match.besoin_de_reprise_egalisatrice())
-				#######################
-				################ ATTENTION IL n'ya pas toujours de REG
-				#######################
+					dist_autre = 999999 if not self.match.fr_distance_j2 else self.match.fr_distance_j2
 				if (self.match.besoin_de_reprise_egalisatrice() and self.reprise_egalisatrice_existe()) or not self.match.besoin_de_reprise_egalisatrice():
-					print('>>>>>>>> soit (besoin rREG et elle existe) Soit pas besoin de REG')
-					if self.scoref_j1() >= self.match.fr_distance_j1 and self.scoref_j2() < self.match.fr_distance_j2: 
+					dist1 = 999999 if not self.match.fr_distance_j1 else self.match.fr_distance_j1
+					dist2 = 999999 if not self.match.fr_distance_j2 else self.match.fr_distance_j2
+					if self.scoref_j1() >= dist1 and self.scoref_j2() < dist2: 
 						joueur_vainqueur=1
-					elif self.scoref_j1() < self.match.fr_distance_j1 and self.scoref_j2() >= self.match.fr_distance_j2: 
+					elif self.scoref_j1() < dist1 and self.scoref_j2() >= dist2: 
 						joueur_vainqueur=2
-					else: #(self.scoref_j1 < self.match.fr_distance_j1 and self.scoref_j2 < self.match.fr_distance_j2) or (if self.scoref_j1 >= self.match.fr_distance_j1 and self.scoref_j2 >= self.match.fr_distance_j2)
+					else: 
 						# On compare les moyennes
-						if self.scoref_j1()/self.match.fr_distance_j1 > self.scoref_j2()/self.match.fr_distance_j2: joueur_vainqueur=1
-						elif self.scoref_j1()/self.match.fr_distance_j1 < self.scoref_j2()/self.match.fr_distance_j2: joueur_vainqueur=2
+						if self.scoref_j1()/dist1 > self.scoref_j2()/dist2: joueur_vainqueur=1
+						elif self.scoref_j1()/dist1 < self.scoref_j2()/dist2: joueur_vainqueur=2
 						else : joueur_vainqueur=0
-				print('autre:')
-				print(score_autre)
-				print(dist_autre)
 				if (self.match.besoin_de_reprise_egalisatrice() and score_autre >= dist_autre): joueur_vainqueur = id_autre
-			print('vainqueur : {}'.format(joueur_vainqueur))
+			# print('vainqueur : {}'.format(joueur_vainqueur))
 			if joueur_vainqueur != "":
 				#on insere un évenement victoire-frame
 				FrameEvent.objects.create(event_type=EventType.objects.get(nom='victoire-frame'),frame=self,crediteur=joueur_vainqueur)
@@ -343,8 +342,12 @@ class Frame(models.Model):
 				#on insere une nouvelle frame avec num+=1 si le match n'est pas fini
 				self.match.match_termine()
 				if self.match.vainqueurm() < 1: Frame.objects.create(match=self.match,num=self.num+1)
-				#on test la fin de match
-				#poubelle = self.match.victoirem();
+	def reprise_egalisatrice(self):
+		dernier_evt = FrameEvent.objects.filter(frame=self).order_by('-d_horodatage').values_list('event_type__nom',flat=True).first()
+		if dernier_evt == 'reprise-egalisatrice':
+			return "maintenant"		
+		if dernier_evt == "dernier-coup":
+			return "prochain"		
 	def heure_debut(self): #lecture
 		#### Cette fonction a été changée pour renvoyer unde durée : il faut changer son nom ainsi que dans frame_state qui l'appelle
 		if self.d_debut:
@@ -358,6 +361,10 @@ class Frame(models.Model):
 			return -1
 		else:
 			return f.values_list("crediteur",flat=True)[0]
+	def next_frame_existe(self):
+		f=Frame.objects.filter(match=self.match, num=self.num+1)
+		if f:
+			return f.first().pk;
 
 ###########  E V E N T   T Y P E #############
 class EventType(models.Model):
@@ -382,7 +389,7 @@ class EventType(models.Model):
 
 ###########  F R A M E E V E N T #############
 class FrameEvent(models.Model):
-	frame = models.ForeignKey(Frame, on_delete=models.PROTECT)
+	frame = models.ForeignKey(Frame, on_delete=models.CASCADE)
 	crediteur = models.SmallIntegerField() # 0 = reprise ; 1=joueur1 ; 2=joueur2
 	event_type = models.ForeignKey(EventType, on_delete=models.PROTECT)
 	points = models.SmallIntegerField(blank=True, null=True)
