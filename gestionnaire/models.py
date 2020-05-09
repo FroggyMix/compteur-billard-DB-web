@@ -114,7 +114,7 @@ class Match(models.Model):
 	def dureem_reelle(self): #lecture
 		dureeM=0
 		for f in Frame.objects.filter(match=self):
-			dureeM = dureeM + f.dureef_reelle_en_secondes
+			dureeM = dureeM + f.dureef_reelle_en_secondes()
 		return str(datetime.timedelta(seconds=dureeM))
 	def vainqueurm(self): #lecture
 		### Renvoie : 	-1 si le match n'est pas encore terminé
@@ -193,9 +193,16 @@ class Frame(models.Model):
 		score = FrameEvent.objects.filter(frame=self,crediteur=1,event_type__nom='score').values('points').aggregate(Sum('points'))['points__sum'] 
 		return 0 if score is None else score
 	def scoref_j2(self): #lecture
-		score = FrameEvent.objects.filter(frame=self,crediteur=2,event_type__nom='score').values('points').aggregate(Sum('points'))['points__sum'] 
-		return 0 if score is None else score
-	@property
+		score = FrameEvent.objects.filter(frame=self,crediteur=2,event_type__nom='score').values('points').aggregate(Sum('points'))['points__sum'] 		
+		return 0 if score is None else score	
+	def moyennef_j1(self):#lecture
+		nb_pass = FrameEvent.objects.filter(frame=self,event_type__nom='pass',crediteur=1).count()
+		breakj = self.break_en_cours() if self.joueur_actif()==1 else 0		
+		return round((self.scoref_j1() - breakj) / nb_pass,3) if nb_pass > 0 else 0
+	def moyennef_j2(self):#lecture
+		nb_pass = FrameEvent.objects.filter(frame=self,event_type__nom='pass',crediteur=2).count()
+		breakj = self.break_en_cours() if self.joueur_actif()==2 else 0		
+		return round((self.scoref_j2() - breakj) / nb_pass,3) if nb_pass > 0 else 0
 	def dureef_reelle_en_secondes(self):  #lecture
 		if self.d_debut:
 			if self.d_fin:
@@ -351,9 +358,9 @@ class Frame(models.Model):
 	def heure_debut(self): #lecture
 		#### Cette fonction a été changée pour renvoyer unde durée : il faut changer son nom ainsi que dans frame_state qui l'appelle
 		if self.d_debut:
-			# print('D D D D D D D D D D',str(datetime.timedelta(seconds=self.dureef_reelle_en_secondes)))
+			# print('D D D D D D D D D D',str(datetime.timedelta(seconds=self.dureef_reelle_en_secondes())))
 			# print('D D D D D D D D D D Heure debut frame=',self.d_debut.strftime("%H:%M:%S"))
-			return str(datetime.timedelta(seconds=self.dureef_reelle_en_secondes))
+			return str(datetime.timedelta(seconds=self.dureef_reelle_en_secondes()))
 		else: return ""		
 	def debutant(self): #lecture
 		f=FrameEvent.objects.filter(frame=self,event_type__nom='toss-engage')

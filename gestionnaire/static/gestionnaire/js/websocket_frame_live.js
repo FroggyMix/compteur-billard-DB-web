@@ -25,8 +25,8 @@ chatSocket.onmessage = function(e) {
 
 	document.querySelector('#scoref_j1').textContent = (data.message.scoref_j1);
 	document.querySelector('#scoref_j2').textContent = (data.message.scoref_j2);
-	document.querySelector('#moyennef_j1').textContent = Math.round(1000*parseInt(data.message.scoref_j1)/parseInt(data.message.reprise))/1000;
-	document.querySelector('#moyennef_j2').textContent = Math.round(1000*parseInt(data.message.scoref_j2)/parseInt(data.message.reprise))/1000;
+	document.querySelector('#moyennef_j1').textContent = (data.message.moyenne_j1);//Math.round(1000*parseInt(data.message.scoref_j1)/parseInt(data.message.reprise))/1000;
+	document.querySelector('#moyennef_j2').textContent = (data.message.moyenne_j2);//Math.round(1000*parseInt(data.message.scoref_j2)/parseInt(data.message.reprise))/1000;
 	document.querySelector('#frame_reprise').textContent = (data.message.reprise);
 	document.querySelector('#identite_j1').textContent = (data.message.match.nom_joueur1);
 	document.querySelector('#identite_j2').textContent = (data.message.match.nom_joueur2);
