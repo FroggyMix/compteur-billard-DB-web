@@ -85,6 +85,9 @@ class FrameConsumer_sync(WebsocketConsumer):
 			Frame.objects.filter(pk=self.frame_id).update(d_debut=timezone.localtime(timezone.now()))
 			print('Le joueur {} engage la {}ème frame (start).'.format(joueur,Frame.objects.get(pk=self.frame_id).num))
 		
+		if text_data_json['action'] == 'annuler_action':
+			#Demande d'annulation du dernier coup
+			Frame.objects.get(pk=self.frame_id).undo_last_event()
 		
 		#On met à jour tous les scoreboards qui suivent cette frame
 		async_to_sync(self.channel_layer.group_send)(self.frame_group_name,{'type': 'score_message','message':frame_states(self.frame_id)})

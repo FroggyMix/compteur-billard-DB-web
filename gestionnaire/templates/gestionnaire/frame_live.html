@@ -21,14 +21,12 @@
 	{% block header %}
 		{% include "gestionnaire/menu.html" with active="jouer"%}
 	{% endblock %}
-<!-- <audio autoplay="false" id="son-point" src="http://s1download-universal-soundbank.com/mp3/sounds/18538.mp3"></audio> -->
-<!-- <audio autoplay="false" id="son-reprise" src="http://s1download-universal-soundbank.com/mp3/sounds/18544.mp3"></audio> -->
-<!-- <audio autoplay="false" id="son-reprise">  -->
-	<!-- <source src="http://192.168.1.28:8000/media/sound/message.mp3" type="audio/mp3"> -->
-<!-- </audio> -->
-<audio autoplay="false" id="son-reprise" src="http://192.168.1.28:8000/media/sound/woosh4_court.mp3"></audio>
-<audio autoplay="false" id="son-point" src="http://192.168.1.28:8000/media/sound/message_court.mp3"></audio>
 
+	<audio autoplay="false" id="son-reprise" src="http://192.168.1.28:8000/media/sound/woosh4_court.mp3"></audio>
+	<audio autoplay="false" id="son-point" src="http://192.168.1.28:8000/media/sound/message_court.mp3"></audio>
+	<div class="onglet-dd-tools">
+		<img class="tools" id="annuler_action" src="http://192.168.1.28:8000/media/images/undo_blanc.png" height='50'>
+	</div>
 
 	<div class="frame_top">
 
@@ -60,9 +58,9 @@
 				<div class="timer">Frame time <span id="frame_timer">00:00</span></div>
 				<div class="timer">Match time <span id="match_timer">00:00</span></div>
 			</div>
-			<div class="tab-outils">
-				outils
-			</div>
+			<!-- <div class="tab-outils"> -->
+				<!-- outils -->
+			<!-- </div> -->
 
 		</section>
 		

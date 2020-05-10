@@ -70,13 +70,17 @@ section{ /*AJOUT FLEX MEDIAQ*/
 
 .reprise{background-color:#bbb;color:#333;}
 
-.tab-outils {
-	position : relative;
-	left:0px;
-	top:0px;
+.onglet-dd-tools {
+	position :absolute;
+	left:150px;
+	top:15px;
 	width:100px;
 	height:50px;
-	background:#CC33FF;	
+z-index:100;	
+}
+.tools{
+	cursor: pointer;
+	background:transparent;
 }
 /*************************************************/
 /* DECORATION */

@@ -43,10 +43,11 @@ chatSocket.onmessage = function(e) {
 	
 	//Gestion du chrono de frame : TODO optimisable? en ne relançant pas le chronoo à cchaque arrivée de ws ?
 	const hui=new Date();
-	var debut_frame=(data.message.h_debut);
+	var debut_frame=(data.message.dureef);
 	const h = debut_frame.split(':');	
 	debut_frame2=new Date(hui.getFullYear(),hui.getMonth(),hui.getDate(),hui.getHours()-h[0],hui.getMinutes()-h[1],hui.getSeconds()-h[2]);	
 	chrono_frame();
+	if (data.message.vainqueurf == -1){chrono_frame();}
 	
 	// Affichage de la durée du match
 	var hm=data.message.match.dureeM.split(':');
@@ -57,9 +58,10 @@ chatSocket.onmessage = function(e) {
 	document.querySelector('#match_timer').textContent = hmh+":"+hmm;
 	
 	if (demandeur == 'arbitre'){
+		//window.alert(data.message.dureef)
 		//On gère ensuite le cas où le match vient de commencer (i.e. : joueur_commence=-1)
 		var joueur_actif = (data.message.joueur_actif);
-		if (data.message.h_debut) {
+		if (data.message.dureef !="00:00:00") {
 				//window.alert("le jouer qui a engagé : "+data.message.joueur_commence)
 		}
 		else{
@@ -161,7 +163,6 @@ document.querySelector('#scoref_j2').onclick = function(e) {
 };
 // document.querySelector('#frame_reprise').onclick = function(e) {
 document.querySelector('section.reprise').onclick = function(e) {
-	
 	if (frame_terminee == false){
 		JouerSon("son-reprise");
 		const score_reprise_DOM = document.querySelector('#frame_reprise'); 
@@ -170,6 +171,13 @@ document.querySelector('section.reprise').onclick = function(e) {
 			'joueur': get_joueur_actif(),
 		}));
 	}
+};
+document.querySelector('#annuler_action').onclick = function(e) {
+	//window.alert('annulation')
+	chatSocket.send(JSON.stringify({
+		'action': 'annuler_action',
+	}));
+
 };
 function chrono_frame(){
 	end = new Date()

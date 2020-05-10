@@ -263,7 +263,7 @@ class Frame(models.Model):
 			else:
 				return self.engageur_frame()
 	def vainqueurf(self): #lecture
-		### Renvoie : 	-1 si le match n'est pas encore terminé
+		### Renvoie : 	-1 si la frame n'est pas encore terminé
 		###				0 en cas dégalité
 		###				1 ou 2 si un des joueurs a gangé
 		vainqueur = FrameEvent.objects.filter(frame=self,event_type__nom='victoire-frame').values_list('crediteur',flat=True)
@@ -355,13 +355,13 @@ class Frame(models.Model):
 			return "maintenant"		
 		if dernier_evt == "dernier-coup":
 			return "prochain"		
-	def heure_debut(self): #lecture
+	def dureef(self): #lecture
 		#### Cette fonction a été changée pour renvoyer unde durée : il faut changer son nom ainsi que dans frame_state qui l'appelle
 		if self.d_debut:
 			# print('D D D D D D D D D D',str(datetime.timedelta(seconds=self.dureef_reelle_en_secondes())))
 			# print('D D D D D D D D D D Heure debut frame=',self.d_debut.strftime("%H:%M:%S"))
 			return str(datetime.timedelta(seconds=self.dureef_reelle_en_secondes()))
-		else: return ""		
+		else: return "00:00:00"		
 	def debutant(self): #lecture
 		f=FrameEvent.objects.filter(frame=self,event_type__nom='toss-engage')
 		if not f:
@@ -372,6 +372,9 @@ class Frame(models.Model):
 		f=Frame.objects.filter(match=self.match, num=self.num+1)
 		if f:
 			return f.first().pk;
+	def undo_last_event(self):
+		dernier_evt = FrameEvent.objects.filter(frame=self).order_by('-d_horodatage').first()
+		if dernier_evt: dernier_evt.undo()
 
 ###########  E V E N T   T Y P E #############
 class EventType(models.Model):
@@ -411,3 +414,12 @@ class FrameEvent(models.Model):
 		return f'{self.frame} - {self.d_horodatage.strftime("%H:%M:%S")} - {self.crediteur} : {self.event_type} (+ {self.points}pts)'
 	def get_absolute_url(self):
 		return reverse('frame_event', args=[self.pk])
+	
+	def undo(self,profondeur=""): #ECRITURE
+		print('Annulation ',self.event_type.nom,' de prof= ',profondeur)
+		if profondeur: FrameEvent.objects.filter(pk__in=FrameEvent.objects.filter(frame=self.frame).order_by('-d_horodatage').values_list('pk')[0:profondeur]).delete()
+		elif self.event_type.nom in ["score", "pass","toss-engage","engage"]: self.undo(1)
+		elif self.event_type.nom == "reprise-egalisatrice": self.undo(2)
+		elif self.event_type.nom == "correction": pass
+		elif self.event_type.nom in ["victoire-frame", "victoire-match"]:pass
+			

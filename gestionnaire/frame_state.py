@@ -19,7 +19,7 @@ def frame_states(frame_id):
 			},
 		"numf":fr.num,
 		"nextf":fr.next_frame_existe(),
-		"h_debut":fr.heure_debut(),
+		"dureef":fr.dureef(),
 		"scoref_j1":fr.scoref_j1(),
 		"moyenne_j1":fr.moyennef_j1(),
 		"scoref_j2":fr.scoref_j2(),
