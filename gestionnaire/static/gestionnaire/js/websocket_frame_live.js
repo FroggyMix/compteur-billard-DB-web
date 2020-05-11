@@ -139,7 +139,7 @@ document.querySelector('#maj_scores_submit').onclick = function(e) {
 	modif_j2_DOM.value = '';
 	modif_reprise_DOM.value = '';
 };
-document.querySelector('#scoref_j1').onclick = function(e) {
+document.querySelector('.gauche').onclick = function(e) {
 	if (get_joueur_actif() == 1 && frame_terminee == false) {
 		JouerSon("son-point");
 		const score_j1_DOM = document.querySelector('#scoref_j1');
@@ -150,7 +150,7 @@ document.querySelector('#scoref_j1').onclick = function(e) {
 		}));
 	}
 };
-document.querySelector('#scoref_j2').onclick = function(e) {
+document.querySelector('.droite').onclick = function(e) {
 	if (get_joueur_actif() == 2 && frame_terminee == false) {
 		JouerSon("son-point");
 		const score_j2_DOM = document.querySelector('#scoref_j2');

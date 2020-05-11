@@ -7,6 +7,10 @@
 
 :root
 {
+  --joueur-jaune:#F5FABB;
+  --joueur-inactif:#BDBDBD;
+  --joueur-blanc:#fff;
+
   --body-background: #eee;
   --body-text-size:1.1em;
   --body-font:'Nunito', sans-serif;

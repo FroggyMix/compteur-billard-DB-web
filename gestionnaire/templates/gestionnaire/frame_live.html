@@ -35,14 +35,19 @@
 	<div class="frame_wrapper">	
 		<section class="joueur gauche joueur_actif">
 			<div class="score">
-				<div class="scoref" id="scoref_j1"></div>
-				<div class="moyennef">moyenne <span id="moyennef_j1"></span></div>
+				<div class="scoref">
+					<span id="scoref_j1"></span><span class="distance">/45</span>
+				</div>				
 				<div class="break">break <span id="break_j1"></span></div>
 			</div>
-			<div class="identite">
-				<div class='nom'>
-					<span id="identite_j1">Joueur1</span>
-					<div class="drapeau"><img src="https://upload.wikimedia.org/wikipedia/commons/0/05/Flag_of_Brazil.svg" alt="pays" width=40wmin >
+			<div class="sous-score">
+				<div class="moyennef">moyenne <span id="moyennef_j1"></span></div>
+				<div class="identite">
+					<div class='nom'>
+						<span id="identite_j1">Joueur1</span>
+						<!-- <div class="drapeau"><img src="https://upload.wikimedia.org/wikipedia/commons/0/05/Flag_of_Brazil.svg" alt="pays" width=40wmin > -->
+						<div class="drapeau"><img src="https://upload.wikimedia.org/wikipedia/commons/c/c3/Flag_of_France.svg" alt="pays" width=40wmin >
+						</div>
 					</div>
 				</div>
 			</div>
@@ -52,35 +57,40 @@
 			<div class="match-infos">
 				<div class="match_score"><span id="match_score"></span></div>		
 			</div>
-			<div class="frame_reprise" id="frame_reprise"></div>
+			<div class="frame_reprise">
+				<span  id="frame_reprise"></span>
+				<span class="distance">/45</span>
+			</div>
+ 			
 			<div class="timer-infos">	
 				<div class="timer">Shot time <span id="shot_timer">00:00</span></div>
 				<div class="timer">Frame time <span id="frame_timer">00:00</span></div>
 				<div class="timer">Match time <span id="match_timer">00:00</span></div>
 			</div>
-			<!-- <div class="tab-outils"> -->
-				<!-- outils -->
-			<!-- </div> -->
-
 		</section>
 		
 		<section class="joueur droite">
 			<div class="score">
-				<div class="scoref" id="scoref_j2"></div>
-				<div class="moyennef"><span id="moyennef_j2"></span> moyenne</div>
-				<div class="break"> <span id="break_j2"></span> break</div>
+				<div class="scoref">
+					<span id="scoref_j2"></span><span class="distance">/55</span>
+				</div>				
+				<div class="break"> break<span id="break_j2"></span></div>
 			</div>
-			<div class="identite">
-				<div class='nom'>
-					<div class="drapeau"><img src="https://upload.wikimedia.org/wikipedia/commons/0/05/Flag_of_Brazil.svg" alt="pays" width=40wmin >
+			<div class="sous-score">
+				<div class="moyennef"><span id="moyennef_j2"></span> moyenne</div>	
+				<div class="identite">
+					<div class='nom'>
+						<!-- <div class="drapeau"><img src="https://upload.wikimedia.org/wikipedia/commons/0/05/Flag_of_Brazil.svg" alt="pays" width=40wmin > -->
+						<div class="drapeau"><img src="https://upload.wikimedia.org/wikipedia/commons/c/c3/Flag_of_France.svg" alt="pays" width=40wmin >
+						</div>
+						<span id="identite_j2">Joueur2</span>				
 					</div>
-					<span id="identite_j2">Joueur2</span>				
 				</div>
 			</div>
 		</section>	
 	</div> <!-- /frame_wrapper -->
 
-	<div class="actions_wrapper formulaire">
+	<div class="actions_wrapper formulaire invisible" >
 		<H3>Valeurs à ajouter (négatifs autorisés) pour :</H3>
 		<ul><li><label for="maj_J1">Joueur 1 :</label>
 		<input type="number" id="maj_J1" name="maj_J1" min="-100" max="100">
@@ -92,11 +102,11 @@
 		</ul>
 	</div>     
 
-	<div class="stat_wrapper"> 
+	<div class="stat_wrapper invisible"> 
 		<H3>Statistiques</H3>
 	</div>															 
 
-	<div class="frame_bottom">(pour gérer l'espace vertical ou pour afficher des messages)</div>
+	<div class="frame_bottom"></div>
 
 <!-- Fenêtre modale Toss -->
 <dialog id="toss_modal" >
@@ -106,7 +116,8 @@
   </div>
   <footer class="modal-footer">
     <button id="toss_BtnJoueur1" type="button">Joueur 1</button>
-    <button id="toss_BtnJoueur2" type="button">Joueur 2</button>
+    <button id="toss_BtnJoueu
+	r2" type="button">Joueur 2</button>
   </footer>
   <button id="toss_close" class="close" type="button">&times;</button>
 </dialog>

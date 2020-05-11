@@ -9,7 +9,6 @@
   box-sizing: border-box;
 }
 
-
 /*************************************************/
 /* DISPOSITION du SCOREBOARD */
 /*************************************************/
@@ -32,19 +31,21 @@ section{ /*AJOUT FLEX MEDIAQ*/
 .joueur,.reprise {
   display: flex; /* IE fix */
   flex: 1; /* occupe la largeur restante */
-	flex-direction: column; /* affichage vertical */
+  flex-direction: column; /* affichage vertical */
 }
 .reprise{justify-content:space-evenly;text-align : center;}
 
-.identite{
+
+.identite{}
+.sous-score{
   flex-grow:1;
   display: flex;
   flex-direction: column;
   justify-content: end;  /*all at bottom*/
+  margin-top:5vmin;
 }
-
 .nom{display:flex; flex-direction:row;justify-content: end;}
-.nom span{display:block;line-height:4vmin; font-size:4vmin;}
+.nom span{display:block; font-size:6vmin;}
 /*.nom img{display:block;}*/
 
 .frame_reprise, .match-infos, .timer-infos {display: flex;}
@@ -52,13 +53,18 @@ section{ /*AJOUT FLEX MEDIAQ*/
 .timer-infos {display: flex;flex-direction:column;}
 
 .match-infos{display:flex;flex-direction:column;}
+
+.frame_bottom{flex-grow:1;background:#333}
+
 /*Joueur ACTIF*/
-.joueur_actif{color:lightgreen;}
+.gauche.joueur_actif{color:var(--joueur-blanc);}
+.droite.joueur_actif{color:var(--joueur-jaune);}
 .joueur_actif .break{display: block;}
 
 /*Différence joueur droite/gauche*/
+.gauche, .droite{color:var(--joueur-inactif);}
 .droite{text-align:left}
-.droite .nom{justify-content:start;color:#FFCC33;}
+.droite .nom{justify-content:start;color:var(--joueur-jaune);}
 .gauche{text-align:right}
 .gauche .nom{justify-content:end;color:#fff;}
 
@@ -71,73 +77,97 @@ section{ /*AJOUT FLEX MEDIAQ*/
 .reprise{background-color:#bbb;color:#333;}
 
 .onglet-dd-tools {
-	position :absolute;
+	position:absolute;
 	left:150px;
 	top:15px;
 	width:100px;
 	height:50px;
-z-index:100;	
+	z-index:100;	
 }
 .tools{
 	cursor: pointer;
 	background:transparent;
 }
+.invisible{display:none;}
+
+
 /*************************************************/
 /* DECORATION */
 /*************************************************/
-
-
 section {
 	padding: 5px;
 	margin: 0;
 	border: 2px solid #eee;
 	/*border-radius: 10px;*/
 	color: #fff;
-}
-section {
 	background: #333;
 	font-size: 1.3vmin;
 }
 
-
 .nom >* {padding:5px}
 
 .identite {padding-top:10px;}
-.frame_reprise{	line-height:20vmin; font-size:20vmin;}
-.timer span{line-height:5vmin; font-size:5vmin;}
-.timer span{line-height:5vmin; font-size:5vmin;}
-.scoref {line-height:40vmin; font-size:40vmin;}
-.moyennef span{line-height:6vmin; font-size:6vmin;}
-.break span{line-height:10vmin; font-size:10vmin;}
-.match_score span{line-height:8vmin; font-size:8vmin;}
-.break{	display: none;} /*par défaut le break n'est pas affiché (cf. .active)*/
+.frame_reprise{font-size:20vmin;}
+.timer span{font-size:5vmin;}
+.timer span{font-size:5vmin;}
+.scoref {font-size:60vmin;}
+.moyennef span{font-size:6vmin;}
+.break span{font-size:13vmin;}
+.match_score span{font-size:8vmin;}
+.distance{font-size:4vmin;}
+.break{	display: none; color:lightgreen;} /*par défaut le break n'est pas affiché (cf. .active)*/
 
 .frame_reprise, .scoref {cursor: pointer;}
 
-.scoref, .reprise {font-family:"ChronometreGras"/*var(--chrono-font)*/;}
+.scoref, .reprise, .break {font-family:"ChronometreGras"/*var(--chrono-font)*/;}
+.score{padding-right:2vmin}
+
+/*Gestion des marges à cause de la police merdique*/
+.score{margin-top:-15vmin;}
+.scoref{margin-bottom:-15vmin;}
+.scoref span{line-height:0;}
+
+/* .frame_reprise span{line-height:0;} */
+.frame_reprise{margin-top:-3vmin;margin-bottom:-3vmin;}
+.break{margin-bottom:-2vmin;}
+
+/* Pour un effet de nénon */
+/* .actif > #scoref_j1,#scoref_j2,.break{ */
+	/* animation: blur .75s ease-out infinite; */
+	/* text-shadow: 0px 0px 5px #fff, 0px 0px 5px #fff; */
+/* } */
 
 /*************************************************/
 /* RESPONSIVE */
 /*************************************************/
-@media (max-aspect-ratio: 3000/5000) { /*AJOUT FLEX MEDIAQ*/
+@media (max-aspect-ratio: 3000/5000) { /*type ecran portable*/
 	section:nth-child(2) {
 		order:0;flex-basis:100%;
 	}
 	.gauche{text-align:left}
 	.droite{text-align:right}
-	.reprise{flex-direction:row;flex-wrap:wrap; }
-	
+	.scoref {font-size:40vmin;}
+	.reprise {flex-direction: row;}
+	/*Gestion des marges à cause de la police merdique*/
+	.score{margin-top:-10vmin;}
+	.scoref{margin-bottom:-10vmin;}	
 }
-@media (min-aspect-ratio: 3001/5000) and (max-aspect-ratio: 6200/5000) {/*AJOUT FLEX MEDIAQ*/
+@media (min-aspect-ratio: 3001/5000) and (max-aspect-ratio: 7000/5000) {/*type carré*/
 	section:nth-child(2) {
 		order:3;flex-basis:100%;
 	}
 	.reprise{flex-direction:row;}
+	.scoref {font-size:45vmin;}
+	/*Gestion des marges à cause de la police merdique*/
+	.score{margin-top:-12vmin;}
+	.scoref{margin-bottom:-12vmin;}
 }
 
-@media (min-aspect-ratio: 8500/5000){/*AJOUT FLEX MEDIAQ*/
-  .scoref {line-height:60vmin; font-size:60vmin;}	
-	}
+@media (min-aspect-ratio: 7001/5000){/*ecran large*/
+  /* .scoref {font-size:60vmin;}	 */
+  	.reprise{flex-direction:row;flex-wrap:wrap; max-width:25%;}
+	.reprise{flex-direction:column;}
+}
 	
 /*On force les formulaires à s'ecrire sur la même ligne*/
 .formulaire li{
