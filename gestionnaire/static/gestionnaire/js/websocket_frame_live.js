@@ -28,13 +28,15 @@ chatSocket.onmessage = function(e) {
 	document.querySelector('#moyennef_j1').textContent = (data.message.moyenne_j1);//Math.round(1000*parseInt(data.message.scoref_j1)/parseInt(data.message.reprise))/1000;
 	document.querySelector('#moyennef_j2').textContent = (data.message.moyenne_j2);//Math.round(1000*parseInt(data.message.scoref_j2)/parseInt(data.message.reprise))/1000;
 	document.querySelector('#frame_reprise').textContent = (data.message.reprise);
-	document.querySelector('#identite_j1').textContent = (data.message.match.nom_joueur1);
-	document.querySelector('#identite_j2').textContent = (data.message.match.nom_joueur2);
+	// document.querySelector('#identite_j1').textContent = (data.message.match.nom_joueur1);
+	// document.querySelector('#identite_j2').textContent = (data.message.match.nom_joueur2);
 	//document.querySelector('#frame_shot_timer').textContent = (data.);
-	m1=data.message.match.scorem_j1;
-	m2=data.message.match.scorem_j2;
-	nbf=data.message.match.nb_frames;
-	document.querySelector('#match_score').textContent = m1+" ("+nbf+") "+m2
+	
+	// m1=data.message.match.scorem_j1;
+	// m2=data.message.match.scorem_j2;
+	// nbf=data.message.match.nb_frames;
+	// document.querySelector('#match_score').textContent = m1+" ("+nbf+") "+m2
+	
 	var joueur_actif = (data.message.joueur_actif);
 	var break_j = (data.message.break);
 	//window.alert(joueur_actif)
@@ -49,13 +51,13 @@ chatSocket.onmessage = function(e) {
 	chrono_frame();
 	if (data.message.vainqueurf == -1){chrono_frame();}
 	
-	// Affichage de la durée du match
-	var hm=data.message.match.dureeM.split(':');
-	hmh=hm[0];
-	if (hmh<10){hmh="0"+hmh}
-	hmm=hm[1];
-	if (hmm.length<2){hmm="0"+hmm}
-	document.querySelector('#match_timer').textContent = hmh+":"+hmm;
+	// Affichage de la durée du match : calcul désormais géré directement dans le template (ne change pas pdt la frame)
+	// var hm=data.message.match.dureeM.split(':');
+	// hmh=hm[0];
+	// if (hmh<10){hmh="0"+hmh}
+	// hmm=hm[1];
+	// if (hmm.length<2){hmm="0"+hmm}
+	document.querySelector('#match_timer').textContent = data.message.match.dureeM;
 	
 	if (demandeur == 'arbitre'){
 		//window.alert(data.message.dureef)

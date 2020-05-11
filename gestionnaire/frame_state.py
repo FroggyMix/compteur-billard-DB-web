@@ -7,15 +7,15 @@ def frame_states(frame_id):
 
 	etat_json = {
 		"match":{
-			"nb_frames":fr.match.nb_frames,
-			"scorem_j1":fr.match.scorem_j1(),
-			"scorem_j2":fr.match.scorem_j2(),
 			"dureeM":fr.match.dureem_reelle(),
-			"distanceFR_j1":fr.match.fr_distance_j1,
-			"distanceFR_j2":fr.match.fr_distance_j2,
-			"nom_joueur1":fr.match.joueur1.fullname_score_board(),
-			"nom_joueur2":fr.match.joueur2.fullname_score_board(),
 			"vainqueurm":fr.match.vainqueurm(),
+			# "nb_frames":fr.match.nb_frames, Désormais affiché directement par framelive.html
+			# "scorem_j1":fr.match.scorem_j1(), Désormais affiché directement par framelive.html
+			# "scorem_j2":fr.match.scorem_j2(), Désormais affiché directement par framelive.html
+			# "distanceFR_j1":fr.match.fr_distance_j1, Désormais affiché directement par framelive.html
+			# "distanceFR_j2":fr.match.fr_distance_j2, Désormais affiché directement par framelive.html
+			# "nom_joueur1":fr.match.joueur1.fullname_score_board(), Désormais affiché directement par framelive.html
+			# "nom_joueur2":fr.match.joueur2.fullname_score_board(), Désormais affiché directement par framelive.html
 			},
 		"numf":fr.num,
 		"nextf":fr.next_frame_existe(),

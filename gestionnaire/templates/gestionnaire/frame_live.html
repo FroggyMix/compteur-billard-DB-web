@@ -36,7 +36,7 @@
 		<section class="joueur gauche joueur_actif">
 			<div class="score">
 				<div class="scoref">
-					<span id="scoref_j1"></span><span class="distance">/45</span>
+					<span id="scoref_j1"></span><span class="distance">{% if frame.match.fr_distance_j1 %}/{{ frame.match.fr_distance_j1 }}{% endif %}</span>
 				</div>				
 				<div class="break">break <span id="break_j1"></span></div>
 			</div>
@@ -44,7 +44,7 @@
 				<div class="moyennef">moyenne <span id="moyennef_j1"></span></div>
 				<div class="identite">
 					<div class='nom'>
-						<span id="identite_j1">Joueur1</span>
+						<span id="identite_j1">{{ frame.match.joueur1.fullname_score_board }}</span>
 						<!-- <div class="drapeau"><img src="https://upload.wikimedia.org/wikipedia/commons/0/05/Flag_of_Brazil.svg" alt="pays" width=40wmin > -->
 						<div class="drapeau"><img src="https://upload.wikimedia.org/wikipedia/commons/c/c3/Flag_of_France.svg" alt="pays" width=40wmin >
 						</div>
@@ -55,11 +55,11 @@
 
 		<section class="reprise">
 			<div class="match-infos">
-				<div class="match_score"><span id="match_score"></span></div>		
+				<div class="match_score"><span id="match_score">{{ frame.match.scorem_j1 }} ({{ frame.match.nb_frames }}) {{ frame.match.scorem_j2 }}</span></div>		
 			</div>
 			<div class="frame_reprise">
 				<span  id="frame_reprise"></span>
-				<span class="distance">/45</span>
+				<span class="distance">{% if frame.match.fr_limite_nb_reprises %}/{{ frame.match.fr_limite_nb_reprises }}{% endif %}</span>
 			</div>
  			
 			<div class="timer-infos">	
@@ -72,7 +72,7 @@
 		<section class="joueur droite">
 			<div class="score">
 				<div class="scoref">
-					<span id="scoref_j2"></span><span class="distance">/55</span>
+					<span id="scoref_j2"></span><span class="distance">{% if frame.match.fr_distance_j2 %}/{{ frame.match.fr_distance_j2 }}{% endif %}</span>
 				</div>				
 				<div class="break"> break<span id="break_j2"></span></div>
 			</div>
@@ -83,7 +83,7 @@
 						<!-- <div class="drapeau"><img src="https://upload.wikimedia.org/wikipedia/commons/0/05/Flag_of_Brazil.svg" alt="pays" width=40wmin > -->
 						<div class="drapeau"><img src="https://upload.wikimedia.org/wikipedia/commons/c/c3/Flag_of_France.svg" alt="pays" width=40wmin >
 						</div>
-						<span id="identite_j2">Joueur2</span>				
+						<span id="identite_j2">{{ frame.match.joueur1.fullname_score_board }}</span>				
 					</div>
 				</div>
 			</div>

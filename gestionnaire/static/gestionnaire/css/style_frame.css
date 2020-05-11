@@ -123,8 +123,8 @@ section {
 .score{padding-right:2vmin}
 
 /*Gestion des marges à cause de la police merdique*/
-.score{margin-top:-15vmin;}
-.scoref{margin-bottom:-15vmin;}
+.score{margin-top:-12vmin;}
+.scoref{margin-bottom:-12vmin;}
 .scoref span{line-height:0;}
 
 /* .frame_reprise span{line-height:0;} */

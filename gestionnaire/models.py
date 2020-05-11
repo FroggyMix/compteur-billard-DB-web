@@ -115,7 +115,14 @@ class Match(models.Model):
 		dureeM=0
 		for f in Frame.objects.filter(match=self):
 			dureeM = dureeM + f.dureef_reelle_en_secondes()
-		return str(datetime.timedelta(seconds=dureeM))
+		str_duree=str(datetime.timedelta(seconds=dureeM))
+		str_duree=str_duree.split(":")
+		for i in range(3):
+			if len(str_duree[i]) ==1 :str_duree[i]="0"+str_duree[i]
+		#str_duree=str_duree[0]+":"+str_duree[1]+":"+str_duree[2]
+		str_duree=str_duree[0]+":"+str_duree[1]
+		
+		return str_duree#str(datetime.timedelta(seconds=dureeM))
 	def vainqueurm(self): #lecture
 		### Renvoie : 	-1 si le match n'est pas encore terminé
 		###				1 ou 2 si un des joueurs a gangé

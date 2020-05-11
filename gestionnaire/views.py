@@ -25,17 +25,6 @@ def match_liste(request):
 	matchs=Match.objects.all()
 	matchs = helpers.pg_records(request, matchs, 10) #Pagination
 	return render(request, 'gestionnaire/match_liste.html', {'matchs':matchs})
-
-# def frame_liste(request):
-	# framesEC=Frame.objects.frame_en_cours()
-	# framesAV=Frame.objects.frame_a_venir()
-	# framesRT=Frame.objects.frame_terminee()
-	# context = {
-		# 'framesEC':framesEC,
-		# 'framesAV':framesAV,
-		# 'framesRT':framesRT,
-	# }
-	# return render(request, 'gestionnaire/frame_liste.html', context)
 	
 def frame_liste(request):
 	if request.method == "POST":
@@ -128,7 +117,12 @@ def admin_page(request):
 	return render(request, 'gestionnaire/admin_page.html')
 
 def frame_live(request, frame_id):
-	return render(request,'gestionnaire/frame_live.html',{'frame_id':frame_id})
+	f=Frame.objects.get(pk=frame_id)
+	context = {
+		'frame_id':frame_id,
+		'frame':f,
+	}
+	return render(request,'gestionnaire/frame_live.html',context)
 	
 	
 #debuggage pb de menudef
