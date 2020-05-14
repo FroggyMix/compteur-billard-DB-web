@@ -9,13 +9,7 @@ def frame_states(frame_id):
 		"match":{
 			"dureeM":fr.match.dureem_reelle(),
 			"vainqueurm":fr.match.vainqueurm(),
-			# "nb_frames":fr.match.nb_frames, Désormais affiché directement par framelive.html
-			# "scorem_j1":fr.match.scorem_j1(), Désormais affiché directement par framelive.html
-			# "scorem_j2":fr.match.scorem_j2(), Désormais affiché directement par framelive.html
-			# "distanceFR_j1":fr.match.fr_distance_j1, Désormais affiché directement par framelive.html
-			# "distanceFR_j2":fr.match.fr_distance_j2, Désormais affiché directement par framelive.html
-			# "nom_joueur1":fr.match.joueur1.fullname_score_board(), Désormais affiché directement par framelive.html
-			# "nom_joueur2":fr.match.joueur2.fullname_score_board(), Désormais affiché directement par framelive.html
+			"score_match":fr.match.score_match_dans_framelive(), #On envoie qd mm cette info car à la fin de la dernière frame il faut prendre en compte le changement de score
 			},
 		"numf":fr.num,
 		"nextf":fr.next_frame_existe(),

@@ -63,8 +63,7 @@ class FrameConsumer_sync(WebsocketConsumer):
 			temp = Frame.objects.get(pk=self.frame_id).reprise_egalisatrice_detecte()
 			temp = Frame.objects.get(pk=self.frame_id).frame_terminee()
 			temp = Frame.objects.get(pk=self.frame_id).match.match_termine()
-			####todo on detecte la fin du match
-			
+			####todo on detecte la fin du match			
 			print ('Le joueur {} a passé la main.'.format(joueur))
 			
 		if text_data_json['action'] == 'toss':
@@ -89,10 +88,18 @@ class FrameConsumer_sync(WebsocketConsumer):
 			#Demande d'annulation du dernier coup
 			Frame.objects.get(pk=self.frame_id).undo_last_event()
 		
-		#On met à jour tous les scoreboards qui suivent cette frame
-		async_to_sync(self.channel_layer.group_send)(self.frame_group_name,{'type': 'score_message','message':frame_states(self.frame_id)})
+		if text_data_json['action'] == 'redirect':
+			#demande de changement d'url (frame suivante ou retour frame_liste
+			async_to_sync(self.channel_layer.group_send)(self.frame_group_name,{'type': 'redirect','message':{'url':text_data_json['url']}})
+		else:	
+			#On met à jour tous les scoreboards qui suivent cette frame
+			async_to_sync(self.channel_layer.group_send)(self.frame_group_name,{'type': 'score_message','message':frame_states(self.frame_id)})
 
 	def score_message(self,event):
+		message = event['message']
+		self.send(text_data=json.dumps({'message':message}))
+	
+	def redirect(self,event):
 		message = event['message']
 		self.send(text_data=json.dumps({'message':message}))
 

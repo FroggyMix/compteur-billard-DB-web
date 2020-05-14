@@ -1,8 +1,8 @@
 @import 'variables.css';
 
 /*DEBUGGAGE*/
-/* div {border:0.2mm dashed red;} */
-/* p {border:0.2mm dashed green;} */
+div {border:0.2mm dashed red;}
+p {border:0.2mm dashed green;}
 *, *:before, *:after {
   -moz-box-sizing: border-box;
   -webkit-box-sizing: border-box;
@@ -35,8 +35,6 @@ section{ /*AJOUT FLEX MEDIAQ*/
 }
 .reprise{justify-content:space-evenly;text-align : center;}
 
-
-.identite{}
 .sous-score{
   flex-grow:1;
   display: flex;
@@ -44,9 +42,13 @@ section{ /*AJOUT FLEX MEDIAQ*/
   justify-content: end;  /*all at bottom*/
   margin-top:5vmin;
 }
+.identite{}
 .nom{display:flex; flex-direction:row;justify-content: end;}
 .nom span{display:block; font-size:6vmin;}
 /*.nom img{display:block;}*/
+
+.drapeau{display:flex;}
+.drapeau img{margin:auto;}
 
 .frame_reprise, .match-infos, .timer-infos {display: flex;}
 .frame_reprise, .match-infos {display:inline-block;text-align:center;}
@@ -130,6 +132,36 @@ section {
 /* .frame_reprise span{line-height:0;} */
 .frame_reprise{margin-top:-3vmin;margin-bottom:-3vmin;}
 .break{margin-bottom:-2vmin;}
+
+
+.gauche.joueur_actif{
+/* IE10+ */ 
+background-image: -ms-radial-gradient(100% 75%, ellipse farthest-corner, #555 0%, #333 100%);
+/* Mozilla Firefox */ 
+background-image: -moz-radial-gradient(100% 25%, ellipse farthest-corner, #555 0%, #333 100%);
+/* Opera */ 
+background-image: -o-radial-gradient(100% 25%, ellipse farthest-corner, #555 0%, #333 100%);
+/* Webkit (Safari/Chrome 10) */ 
+background-image: -webkit-gradient(radial, 100% 25%, 0, 286, color-stop(0, #555), color-stop(100, #333));
+/* Webkit (Chrome 11+) */ 
+background-image: -webkit-radial-gradient(100% 25%, ellipse farthest-corner, #555 0%, #333 75%);
+}
+.droite.joueur_actif{
+/* IE10+ */ 
+background-image: -ms-radial-gradient(0% 25%, ellipse farthest-corner, #666 0%, #333 100%);
+/* Mozilla Firefox */ 
+background-image: -moz-radial-gradient(0% 25%, ellipse farthest-corner, #666 0%, #333 100%);
+/* Opera */ 
+background-image: -o-radial-gradient(0% 25%, ellipse farthest-corner, #666 25%, #333 75%);
+/* Webkit (Safari/Chrome 10) */ 
+background-image: -webkit-gradient(radial, 0% 25%, 0, 286, color-stop(0, #666), color-stop(100, #333));
+/* Webkit (Chrome 11+) */ 
+background-image: -webkit-radial-gradient(0% 25%, ellipse farthest-corner, #666 0%, #333 100%);
+}
+.blur{
+  overflow:hidden;
+  filter: blur(8px);
+}
 
 /* Pour un effet de nénon */
 /* .actif > #scoref_j1,#scoref_j2,.break{ */

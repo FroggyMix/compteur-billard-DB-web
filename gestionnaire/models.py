@@ -147,6 +147,8 @@ class Match(models.Model):
 				if not fr.frameevent_exists('victoire-match'):
 					fr = Frame.objects.filter(match=self).order_by('-num').first()
 					FrameEvent.objects.create(event_type=EventType.objects.get(nom='victoire-match'),frame=fr,crediteur=vainqueurm)
+	def score_match_dans_framelive(self):
+		return "{} ({}) {}".format(self.scorem_j1(),self.nb_frames,self.scorem_j2())
 	class Meta:
 		db_table = 'Match'
 		verbose_name_plural = "MatchModel"
