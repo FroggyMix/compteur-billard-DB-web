@@ -43,11 +43,11 @@ class FrameConsumer_sync(WebsocketConsumer):
 			reprise_add = text_data_json['reprise_add'] 
 			print('correction = ({}, {}, {})'.format(j1_add,j2_add,reprise_add))
 			if j1_add != "" and j1_add != 0:
-				FrameEvent.objects.create(event_type=EventType.objects.get(nom='correction'),frame=Frame.objects.get(pk=self.frame_id),crediteur=1,points=j1_add)
+				Frame.objects.get(pk=self.frame_id).correction_score(1,j1_add)
 			if j2_add != "" and j1_add != 0:
-				FrameEvent.objects.create(event_type=EventType.objects.get(nom='correction'),frame=Frame.objects.get(pk=self.frame_id),crediteur=2,points=j2_add)
+				Frame.objects.get(pk=self.frame_id).correction_score(2,j2_add)
 			if reprise_add != "" and reprise_add != 0:
-				FrameEvent.objects.create(event_type=EventType.objects.get(nom='correction'),frame=Frame.objects.get(pk=self.frame_id),crediteur=0,points=reprise_add)				
+				Frame.objects.get(pk=self.frame_id).correction_score(0,reprise_add)
 
 		if text_data_json['action'] == 'score':
 			joueur = text_data_json['joueur']

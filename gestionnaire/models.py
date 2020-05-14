@@ -209,10 +209,11 @@ class Frame(models.Model):
 	def get_absolute_url(self): #lecture
 		return reverse('frame_live', args=[self.pk])	
 	def scoref_j1(self): #lecture
-		score = FrameEvent.objects.filter(frame=self,crediteur=1,event_type__nom='score').values('points').aggregate(Sum('points'))['points__sum'] 
+		#score = FrameEvent.objects.filter(frame=self,crediteur=1,event_type__nom='score').values('points').aggregate(Sum('points'))['points__sum'] 
+		score = FrameEvent.objects.filter((Q(event_type__nom='score') | Q(event_type__nom='correction')),frame=self, crediteur=1).values('points').aggregate(Sum('points'))['points__sum'] 
 		return 0 if score is None else score
 	def scoref_j2(self): #lecture
-		score = FrameEvent.objects.filter(frame=self,crediteur=2,event_type__nom='score').values('points').aggregate(Sum('points'))['points__sum'] 		
+		score = FrameEvent.objects.filter((Q(event_type__nom='score') | Q(event_type__nom='correction')),frame=self, crediteur=2).values('points').aggregate(Sum('points'))['points__sum'] 		
 		return 0 if score is None else score	
 	def moyennef_j1(self):#lecture
 		nb_pass = FrameEvent.objects.filter(frame=self,event_type__nom='pass',crediteur=1).count()
@@ -246,10 +247,11 @@ class Frame(models.Model):
 		toss_frame1 = FrameEvent.objects.filter(frame=frame1,event_type__nom='toss-engage').order_by('-d_horodatage').values_list("crediteur",flat=True).first()
 		if toss_frame1 is not None:
 			engageur = (((toss_frame1 + self.num) % 2) + 1)
+			correction = FrameEvent.objects.filter(event_type__nom='correction',frame=self, crediteur=0).values('points').aggregate(Sum('points'))['points__sum']  
 			if engageur == 1:
-				return FrameEvent.objects.filter(frame=self,crediteur=2,event_type__nom='pass').count()+1-flag
+				return FrameEvent.objects.filter(frame=self,crediteur=2,event_type__nom='pass').count()+1-flag + correction
 			elif engageur == 2:
-				return FrameEvent.objects.filter(frame=self,crediteur=1,event_type__nom='pass').count()+1-flag
+				return FrameEvent.objects.filter(frame=self,crediteur=1,event_type__nom='pass').count()+1-flag + correction
 			else: return -1
 		else:
 			return 1 #le match (donc la frame) n'a pas encore commencé			
@@ -394,6 +396,9 @@ class Frame(models.Model):
 	def undo_last_event(self):
 		dernier_evt = FrameEvent.objects.filter(frame=self).order_by('-d_horodatage').first()
 		if dernier_evt: dernier_evt.undo()
+	def correction_score(self, crediteur, montant):
+		###Additionne montant points(accepte les negatifs) au créditeur(0, 1 ou 2)
+		FrameEvent.objects.create(event_type=EventType.objects.get(nom='correction'),frame=self,crediteur=crediteur,points=montant)	
 
 ###########  E V E N T   T Y P E #############
 class EventType(models.Model):
@@ -442,7 +447,6 @@ class FrameEvent(models.Model):
 		return f'{self.frame} - {self.d_horodatage.strftime("%H:%M:%S")} - {self.crediteur} : {self.event_type} (+ {self.points}pts)'
 	def get_absolute_url(self):
 		return reverse('frame_event', args=[self.pk])
-	
 	def undo(self,profondeur=""): #ECRITURE
 		print('Annulation ',self.event_type.nom,' de prof= ',profondeur)
 		if profondeur: FrameEvent.objects.filter(pk__in=FrameEvent.objects.filter(frame=self.frame).order_by('-d_horodatage').values_list('pk')[0:profondeur]).delete()

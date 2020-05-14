@@ -31,9 +31,9 @@ class MatchAdmin(admin.ModelAdmin):
 	list_filter = ['jeu_type']
 	date_hierarchy = 'd_debut'
 class FrameEventAdmin(admin.ModelAdmin):
-	list_display = ('frame', 'EventType_name', 'points', 'origine','d_horodatage')
+	list_display = ('frame', 'EventType_name', 'points', 'crediteur', 'origine','d_horodatage')
 	search_fields = ['frame', 'event_type', 'origine']
-	ordering = ['d_horodatage']
+	ordering = ['-d_horodatage']
 	list_filter = ['event_type', 'origine']
 	date_hierarchy = 'd_horodatage'
 	def EventType_name(self,obj):

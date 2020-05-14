@@ -28,7 +28,7 @@
 					<p>Aucune frame en cours</p>
 				{% endfor %}
 			</ul>
-			<span id="total"> 2 frames en cours</span>	
+			<span id="total">{% if framesEC %} {{ framesEC.count }} frames en cours {% endif %}</span>	
 		</div>
 
         <div class="liste">        
@@ -48,7 +48,7 @@
 					<p>Aucune frame à venir</p>
 				{% endfor %}
 			</ul>
-			<span id="total"> 3 frames à venir</span>	
+			<span id="total"> {% if framesAV %} {{ framesAV.count }} frames à venir {% endif %}</span>	
 		</div>
 		
         <div class="liste">        
@@ -67,7 +67,7 @@
 					<p>Aucune frame terminée, faudrait peut-être jouer !</p>
 				{% endfor %}
 			</ul>
-			<span id="total"> 3 frames à venir</span>	
+			<span id="total"> {% if framesRT %} {{ framesRT.count }} frames récemment terminées {% endif %}</span>	
 		</div>
 	</div>
  
