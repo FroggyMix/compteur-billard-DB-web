@@ -55,23 +55,33 @@ class Joueur(models.Model):
 	prenom = models.CharField(max_length=32)
 	email = models.EmailField(max_length=128, unique=True,)
 	d_creation = models.DateTimeField(default=timezone.now,verbose_name='date d\'inscription')
-	joueur_actif = models.IntegerField(blank=True,null=True) #vide= aucun, 1= joueur1, 2= joueur2
+	joueur_actif = models.IntegerField(blank=True,null=True) #A QUOI SERT CE CHAMP (vide= aucun, 1= joueur1, 2= joueur2)
 	
 	def fullname(self):
 		return "{p} {n}".format(p=self.prenom.title(),n=self.nom.upper())
 	def fullname_score_board(self):
 		return construit_nom(self.prenom.title(),self.nom.upper(),15)
-
-
+	def moyenne(self,jt,jv):
+		### Retourne la moyenne des moyennes des frames jouées poar le joueur
+		### dans le type de jeu et vaiante fournis
+		### Retourne : vide si pas de frame trouvée, la moyenne sinon
+		fj1=Frame.objects.filter(match__jeu_type=jt, match__jeu_variante__nom=jv, match__joueur1=self, d_fin__isnull=False)
+		fj2=Frame.objects.filter(match__jeu_type=jt, match__jeu_variante__nom=jv, match__joueur2=self, d_fin__isnull=False)
+		nbf=0
+		somme_moyennes=0
+		for f in fj1:
+			somme_moyennes += f.moyennef_j1()
+			nbf +=1
+		for f in fj2:
+			somme_moyennes += f.moyennef_j2()
+			nbf +=1
+		return round(somme_moyennes/nbf,3) if nbf>0 else ""
 	class Meta:
 		db_table = 'Joueur'
 		verbose_name_plural = "JoueurModel"
 	def __str__(self):
 		"""Fonction requise par Django pour manipuler les objets dans la base de données."""
 		return f'{self.prenom} {self.nom}'
-	# def save(self, *args, **kwargs):
-		# self.slug = slugify(self.nom+self.prenom)
-		# super(Post, self).save(*args, **kwargs)
 	def get_absolute_url(self):
 		return reverse('joueur_detail', args=[self.pk, slugify(self.nom), '_'+self.prenom])
 
@@ -183,7 +193,7 @@ class Frame(models.Model):
 	match = models.ForeignKey(Match, on_delete=models.CASCADE, db_column='Match_id')  # Field name made lowercase.
 	d_debut = models.DateTimeField(blank=True, null=True)
 	d_fin = models.DateTimeField(blank=True, null=True)
-	num = models.SmallIntegerField(default=1,verbose_name='Numéro de la frame dans le match')
+	num = models.SmallIntegerField(default=1,verbose_name='N° de frame dans le match')
 		
 	objects=FrameManager()# Custom manager
 	
@@ -402,7 +412,10 @@ class EventType(models.Model):
 		verbose_name_plural = "EventTypeModel"
 	def __str__(self):
 		"""Fonction requise par Django pour manipuler les objets Book dans la base de données."""
-		return f'{self.jeu_type} - {self.nom}'
+		if self.jeu_type!="":
+			return f'{self.nom} ({self.jeu_type})'
+		else:
+			return f'{self.nom}'
 	def get_absolute_url(self):
 		return reverse('event_type', args=[self.pk])
 
