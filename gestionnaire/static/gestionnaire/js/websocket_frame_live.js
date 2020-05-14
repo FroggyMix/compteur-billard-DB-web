@@ -1,6 +1,4 @@
-
 const frameId = JSON.parse(document.getElementById('frame-id').textContent);
-
 const FrameSocket = new WebSocket(
 	'ws://'
 	+ window.location.host
@@ -19,8 +17,11 @@ var temp='arbitre'
 if (urlParams.get('ref')=="false"){temp='spectateur';}
 const demandeur=temp
 
+var racine_site=window.location.protocol+'//'+window.location.hostname
+if (window.location.port){racine_site=racine_site+":"+window.location.port}
 var modal_url_OK=""
-var modal_url_Cancel=window.location.hostname //"http://192.168.1.28:8000/"
+var modal_url_Cancel=racine_site //"http://192.168.1.28:8000/"
+const TTS_OK=true // pour activer/desactiver le TTS
 
 FrameSocket.onmessage = function(e) {
 	const data = JSON.parse(e.data);	
@@ -32,7 +33,6 @@ FrameSocket.onmessage = function(e) {
 		}
 		else {url=url+"/?ref=false"
 		}
-//		window.alert(url)
 		window.location.replace(url);	
 	}
 	else{
@@ -65,23 +65,24 @@ FrameSocket.onmessage = function(e) {
 			}
 			else{
 				if (data.message.numf == 1){
-					//speak("Reprise égalisatrice pour le joueur 1");
-					//speak("Dernière reprise pour le joueur 2");
-					speak("Freym et match pour joueur 1");
+					if (TTS_OK) {speak("Quel joueur engage ?");}
 					toss_modal.showModal();
 				}
 				else{
+					if (TTS_OK) {speak("Cliquer lorsque le joueur "+joueur_actif+" est prêt à engager");}
 					document.getElementById('message_start_modal').innerText ="Cliquer sur le bouton ci-dessous lorsque le joueur "+joueur_actif+" est prêt à engager"
 					start_modal.showModal();
 				}	
 			}
 			// Reprise égalisatrice
 			if (data.message.reprise_egalisatrice == "maintenant"){
+				if (TTS_OK) {speak("Reprise égalisatrice pour le joueur "+joueur_actif);}
 				modal_url_OK="";
 				document.getElementById('message_info_modal').innerText ="Reprise égalisatrice pour le joueur "+joueur_actif;
 				info_modal.showModal();
 			}
 			if (data.message.reprise_egalisatrice == "prochain"){
+				if (TTS_OK) {speak("Dernière reprise pour le joueur "+joueur_actif);}
 				modal_url_OK="";
 				document.getElementById('message_info_modal').innerText ="Dernière reprise pour le joueur "+joueur_actif;
 				info_modal.showModal();
@@ -90,22 +91,19 @@ FrameSocket.onmessage = function(e) {
 			if (data.message.vainqueurf >= 0){
 				frame_terminee = true;
 				var texte="Frame ";
+				var texteS="freym"
 				if (data.message.match.vainqueurm > 0){
 					frame_terminee = true;
 					texte="Frame et Match "
+					texteS="freym et match "
 					modal_url_OK="";
 				}
 				else {
-					if (data.message.nextf){
-						host=window.location.protocol+'//'+window.location.hostname
-						if (window.location.port){host=host+":"+window.location.port}
-						//host=host+"/";
-						modal_url_OK=host+"/frame/"+data.message.nextf;
-					}
+					if (data.message.nextf){modal_url_OK=racine_site+"/frame/"+data.message.nextf;}
 				}
-				if (data.message.vainqueurf == 1) {document.getElementById('message_info_modal').innerText =texte+"pour joueur 1"}
-				if (data.message.vainqueurf == 2) {document.getElementById('message_info_modal').innerText =texte+"pour joueur 2"}
-				if (data.message.vainqueurf == 0) {document.getElementById('message_info_modal').innerText ="Egalité ! On rejoue la frame !"}
+				if (data.message.vainqueurf == 1) {document.getElementById('message_info_modal').innerText =texte+"pour joueur 1";if (TTS_OK) {speak(texteS+"pour Franck Rapold");}}
+				if (data.message.vainqueurf == 2) {document.getElementById('message_info_modal').innerText =texte+"pour joueur 2";if (TTS_OK) {speak(texteS+"pour le joueur 2");}}
+				if (data.message.vainqueurf == 0) {document.getElementById('message_info_modal').innerText ="Egalité ! On rejoue la frame !";if (TTS_OK) {speak("égalité, la freym est rejouée");}}
 				info_modal.showModal();
 			}
 		}
@@ -239,9 +237,9 @@ function speak(text){
 	var msg = new SpeechSynthesisUtterance();
 	// var voices = window.speechSynthesis.getVoices();
 	// msg.voice = voices[10]; // Note: some voices don't support altering params
-		speechSynthesis.getVoices().forEach(function(voice) {
-			//window.alert(voice.name, voice.default ? voice.default :'');
-		});
+		// speechSynthesis.getVoices().forEach(function(voice) {
+			// window.alert(voice.name, voice.default ? voice.default :'');
+		// });
 	msg.voiceURI = 'native';
 	msg.volume = 1; // 0 to 1
 	msg.rate = 1; // 0.1 to 10
