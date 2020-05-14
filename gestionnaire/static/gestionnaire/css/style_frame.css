@@ -1,8 +1,8 @@
 @import 'variables.css';
 
 /*DEBUGGAGE*/
-/* div {border:0.2mm dashed red;} */
-/* p {border:0.2mm dashed green;} */
+div {border:0.2mm dashed red;}
+p {border:0.2mm dashed green;}
 *, *:before, *:after {
   -moz-box-sizing: border-box;
   -webkit-box-sizing: border-box;
@@ -39,11 +39,11 @@ section{ /*AJOUT FLEX MEDIAQ*/
   flex-grow:1;
   display: flex;
   flex-direction: column;
-  justify-content: end;  /*all at bottom*/
+  justify-content: flex-end;  /*all at bottom*/
   margin-top:5vmin;
 }
 .identite{}
-.nom{display:flex; flex-direction:row;justify-content: end;}
+.nom{display:flex; flex-direction:row;justify-content: flex-end;}
 .nom span{display:block; font-size:6vmin;}
 /*.nom img{display:block;}*/
 
@@ -178,11 +178,12 @@ background-image: -webkit-radial-gradient(0% 25%, ellipse farthest-corner, #666 
 	}
 	.gauche{text-align:left}
 	.droite{text-align:right}
-	.scoref {font-size:40vmin;}
-	.reprise {flex-direction: row;}
+	.scoref {font-size:30vmin;}
+	.reprise {flex-direction: row;min-height:140px;}
 	/*Gestion des marges à cause de la police merdique*/
-	.score{margin-top:-10vmin;}
-	.scoref{margin-bottom:-10vmin;}	
+	.score{margin-top:-8vmin;}
+	.scoref{margin-bottom:-8vmin;}	
+	.match-infos, .timer-infos, .frame_reprise{justify-content: space-evenly;}	
 }
 @media (min-aspect-ratio: 3001/5000) and (max-aspect-ratio: 7000/5000) {/*type carré*/
 	section:nth-child(2) {
