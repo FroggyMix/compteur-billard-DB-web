@@ -413,7 +413,13 @@ class FrameEvent(models.Model):
 	event_type = models.ForeignKey(EventType, on_delete=models.PROTECT)
 	points = models.SmallIntegerField(blank=True, null=True)
 	d_horodatage = models.DateTimeField(default=timezone.now)
-
+	TYPE_ORIGINE = (
+		('system', 'Système'),
+		('user', 'Utilisateur'),
+		('ia-image', 'IA-image'),
+		('ia-son', 'IA-son')
+		)
+	origine = models.CharField(max_length=15, choices=TYPE_ORIGINE, verbose_name="Origine de l'enregistrement", default='system')
 	class Meta:
 		db_table = 'FrameEvent'
 		verbose_name_plural = "FrameEventModel"
