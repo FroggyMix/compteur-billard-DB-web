@@ -33,6 +33,7 @@
   --liste-color:#111;
   --liste-background:RGB(76,176,80,0.05);
   
+  --menu-hauteur: 50px; /*>=40*/
   --menu-background:#333;
   --menu-color:#eee;
   --menu-selection-bkg-color:#4CAF50;
@@ -41,6 +42,10 @@
   
   --footer-bkg : var(--menu-background);
   --footer-color : var(--menu-color);
+  
+  --boite-outil-bouton-hauteur:32px;
+  --boite-outil-texte-color:#4CAF50;
+  --boite-outil-pannel-background:#375238;
 
   
 }

@@ -248,10 +248,11 @@ class Frame(models.Model):
 		if toss_frame1 is not None:
 			engageur = (((toss_frame1 + self.num) % 2) + 1)
 			correction = FrameEvent.objects.filter(event_type__nom='correction',frame=self, crediteur=0).values('points').aggregate(Sum('points'))['points__sum']  
+			if not correction : correction=0
 			if engageur == 1:
-				return FrameEvent.objects.filter(frame=self,crediteur=2,event_type__nom='pass').count()+1-flag + correction
+				return FrameEvent.objects.filter(frame=self,crediteur=2,event_type__nom='pass').count()+1-flag + correction 
 			elif engageur == 2:
-				return FrameEvent.objects.filter(frame=self,crediteur=1,event_type__nom='pass').count()+1-flag + correction
+				return FrameEvent.objects.filter(frame=self,crediteur=1,event_type__nom='pass').count()+1-flag + correction 
 			else: return -1
 		else:
 			return 1 #le match (donc la frame) n'a pas encore commencé			

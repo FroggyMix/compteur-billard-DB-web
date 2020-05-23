@@ -13,9 +13,9 @@ var timerID = 0
 var frame_terminee = false
 const queryString = window.location.search;
 const urlParams = new URLSearchParams(queryString);
-var temp='arbitre' 
-if (urlParams.get('ref')=="false"){temp='spectateur';}
-const demandeur=temp
+var arbitre=true //='arbitre' 
+if (urlParams.get('ref')=="false"){arbitre=false;}//temp='spectateur';}
+//const demandeur=temp
 
 var racine_site=window.location.protocol+'//'+window.location.hostname
 if (window.location.port){racine_site=racine_site+":"+window.location.port}
@@ -23,12 +23,16 @@ var modal_url_OK=""
 var modal_url_Cancel=racine_site //"http://192.168.1.28:8000/"
 const TTS_OK=true // pour activer/desactiver le TTS
 
+if (arbitre){//affichage des outils dans le menu
+	document.querySelector('.green').classList.remove('invisible')
+	document.querySelector('.yellow').classList.remove('invisible')
+}
+
 FrameSocket.onmessage = function(e) {
 	const data = JSON.parse(e.data);	
-	if (data.message.url){
+	if (data.message.url){ //c'est un ordre de redirection
 		url = data.message.url
-		
-		if(demandeur == 'arbitre'){
+		if(arbitre){
 			url=url+"/?ref=true"
 		}
 		else {url=url+"/?ref=false"
@@ -36,6 +40,8 @@ FrameSocket.onmessage = function(e) {
 		window.location.replace(url);	
 	}
 	else{
+		// La commande ci-dessous est pour l'instant enlevée car ca supprime certain message instantanément (2 trames de suite)
+		//document.querySelector('#message_live').textContent =  ""	//on réinitialise la zone de message, et à la fin du traitement si elle est tjs vide on la masque
 		document.querySelector('#scoref_j1').textContent = (data.message.scoref_j1);
 		document.querySelector('#scoref_j2').textContent = (data.message.scoref_j2);
 		document.querySelector('#moyennef_j1').textContent = (data.message.moyenne_j1);
@@ -58,56 +64,94 @@ FrameSocket.onmessage = function(e) {
 		
 		document.querySelector('#match_timer').textContent = data.message.match.dureeM;
 		
-		if (demandeur == 'arbitre'){
-			//On gère ensuite le cas où le match vient de commencer (i.e. : joueur_commence=-1)
-			var joueur_actif = (data.message.joueur_actif);
-			if (data.message.dureef !="00:00:00") {
+		//On gère ensuite le cas où le match vient de commencer (i.e. : joueur_commence=-1)
+		var joueur_actif = (data.message.joueur_actif);
+		if (data.message.dureef !="00:00:00") {
+		}
+		else{
+			if (data.message.numf == 1){
+				if (arbitre){
+					toss_modal.showModal();
+					if (TTS_OK) {speak("Quel joueur engage ?");}}
+				else{affiche_message_live("En attente de l'identificatio du joueur qui commence")}
+				
 			}
 			else{
-				if (data.message.numf == 1){
-					if (TTS_OK) {speak("Quel joueur engage ?");}
-					toss_modal.showModal();
-				}
-				else{
-					if (TTS_OK) {speak("Cliquer lorsque le joueur "+joueur_actif+" est prêt à engager");}
-					document.getElementById('message_start_modal').innerText ="Cliquer sur le bouton ci-dessous lorsque le joueur "+joueur_actif+" est prêt à engager"
+				discours = "Cliquer lorsque le joueur "+joueur_actif+" est prêt à engager"
+				if (arbitre){
+					document.getElementById('message_start_modal').innerText = discours;
 					start_modal.showModal();
-				}	
-			}
-			// Reprise égalisatrice
-			if (data.message.reprise_egalisatrice == "maintenant"){
-				if (TTS_OK) {speak("Reprise égalisatrice pour le joueur "+joueur_actif);}
-				modal_url_OK="";
-				document.getElementById('message_info_modal').innerText ="Reprise égalisatrice pour le joueur "+joueur_actif;
-				info_modal.showModal();
-			}
-			if (data.message.reprise_egalisatrice == "prochain"){
-				if (TTS_OK) {speak("Dernière reprise pour le joueur "+joueur_actif);}
-				modal_url_OK="";
-				document.getElementById('message_info_modal').innerText ="Dernière reprise pour le joueur "+joueur_actif;
-				info_modal.showModal();
-			}
-			//Fin de frame
-			if (data.message.vainqueurf >= 0){
-				frame_terminee = true;
-				var texte="Frame ";
-				var texteS="freym"
-				if (data.message.match.vainqueurm > 0){
-					frame_terminee = true;
-					texte="Frame et Match "
-					texteS="freym et match "
-					modal_url_OK="";
+					if (TTS_OK) {speak(discours);}
 				}
-				else {
-					if (data.message.nextf){modal_url_OK=racine_site+"/frame/"+data.message.nextf;}
+				else{//spectateur
+					affiche_message_live("En attente de l'engagement du joueur "+joueur_actif)
 				}
-				if (data.message.vainqueurf == 1) {document.getElementById('message_info_modal').innerText =texte+"pour joueur 1";if (TTS_OK) {speak(texteS+"pour Franck Rapold");}}
-				if (data.message.vainqueurf == 2) {document.getElementById('message_info_modal').innerText =texte+"pour joueur 2";if (TTS_OK) {speak(texteS+"pour le joueur 2");}}
-				if (data.message.vainqueurf == 0) {document.getElementById('message_info_modal').innerText ="Egalité ! On rejoue la frame !";if (TTS_OK) {speak("égalité, la freym est rejouée");}}
+			}	
+		}
+		// Reprise égalisatrice
+		if (data.message.reprise_egalisatrice == "maintenant"){
+			discours = "Reprise égalisatrice pour le joueur "+joueur_actif
+			if (arbitre){
+				if (TTS_OK) {speak(discours);}
+				modal_url_OK="";
+				document.getElementById('message_info_modal').innerText = discours;
 				info_modal.showModal();
+			}
+			else{//Spectateur
+				affiche_message_live("Reprise égalisatrice pour le joueur "+joueur_actif)
 			}
 		}
-		//if (data.message.nextf){window.location.replace("http://192.168.1.28:8000/frame/"+data.message.nextf+"/?ref="+urlParams.get('ref'));}
+		if (data.message.reprise_egalisatrice == "prochain"){
+			discours = "Dernière reprise pour le joueur "+joueur_actif
+			if (arbitre){
+				if (TTS_OK) {speak(discours);}				
+				modal_url_OK="";
+				document.getElementById('message_info_modal').innerText = discours;
+				info_modal.showModal();
+			}
+			else{
+				affiche_message_live(discours)
+			}
+		}
+		//Fin de frame
+		if (data.message.vainqueurf >= 0){
+			frame_terminee = true;
+			var discours="Frame ";
+			//var texteS="freym"
+			if (data.message.match.vainqueurm > 0){
+				frame_terminee = true;
+				discours="Frame et Match "
+				//texteS="freym et match "
+				modal_url_OK="";
+			}
+			else {
+				if (data.message.nextf){modal_url_OK=racine_site+"/frame/"+data.message.nextf;}
+			}
+			if (data.message.vainqueurf == 1 || data.message.vainqueurf == 2) {
+				discours = discours + "pour joueur " + data.message.vainqueurf;
+				if (arbitre){
+					if (TTS_OK) {speak(discours);}
+					document.getElementById('message_info_modal').innerText = discours;
+					info_modal.showModal();
+				}
+				else{affiche_message_live(discours)}
+			}		
+			// if (data.message.vainqueurf == 2) {
+				// document.getElementById('message_info_modal').innerText =texte+"pour joueur 2";
+				// if (TTS_OK) {speak(texteS+"pour le joueur 2");}
+				// affiche_message_live(texteS+"pour joueur 2")
+			// }
+			if (data.message.vainqueurf == 0) {
+				discours = "Egalité ! On rejoue la frame !"
+				if (arbitre){
+					if (TTS_OK) {speak(discours);}
+					document.getElementById('message_info_modal').innerText =discours;
+					info_modal.showModal();
+				}
+				else{affiche_message_live(discours)}
+			}
+		}
+		if (document.querySelector('#message_live').textContent ==  ""){document.querySelector('#message_live').classList.add('retracte')}
 	}
 };
 
@@ -134,7 +178,7 @@ document.querySelector('#maj_scores_submit').onclick = function(e) {
 	modif_reprise_DOM.value = '';
 };
 document.querySelector('.gauche').onclick = function(e) {
-	if (demandeur == 'arbitre' && get_joueur_actif() == 1 && frame_terminee == false) {
+	if (arbitre && get_joueur_actif() == 1 && frame_terminee == false) {
 		JouerSon("son-point");
 		const score_j1_DOM = document.querySelector('#scoref_j1');
 		FrameSocket.send(JSON.stringify({
@@ -145,7 +189,7 @@ document.querySelector('.gauche').onclick = function(e) {
 	}
 };
 document.querySelector('.droite').onclick = function(e) {
-	if (demandeur == 'arbitre' && get_joueur_actif() == 2 && frame_terminee == false) {
+	if (arbitre && get_joueur_actif() == 2 && frame_terminee == false) {
 		JouerSon("son-point");
 		const score_j2_DOM = document.querySelector('#scoref_j2');
 		FrameSocket.send(JSON.stringify({
@@ -156,7 +200,7 @@ document.querySelector('.droite').onclick = function(e) {
 	}
 };
 document.querySelector('section.reprise').onclick = function(e) {
-	if (demandeur == 'arbitre' && frame_terminee == false){
+	if (arbitre && frame_terminee == false){
 		JouerSon("son-reprise");
 		const score_reprise_DOM = document.querySelector('#frame_reprise'); 
 		FrameSocket.send(JSON.stringify({
@@ -166,9 +210,11 @@ document.querySelector('section.reprise').onclick = function(e) {
 	}
 };
 document.querySelector('#annuler_action').onclick = function(e) {
-	FrameSocket.send(JSON.stringify({
+	if (arbitre) {
+		FrameSocket.send(JSON.stringify({
 		'action': 'annuler_action',
-	}));
+		}));
+	}
 };
 
 function chrono_frame(){
@@ -240,14 +286,22 @@ function speak(text){
 		// speechSynthesis.getVoices().forEach(function(voice) {
 			// window.alert(voice.name, voice.default ? voice.default :'');
 		// });
+	text = text.replace(/frame/gi, "freyme");
 	msg.voiceURI = 'native';
 	msg.volume = 1; // 0 to 1
 	msg.rate = 1; // 0.1 to 10
 	msg.pitch = 2; //0 to 2
 	msg.text = text;
 	msg.lang = 'fr-FR';
-	// msg.onend = function(e) {
-	  // console.log('Finished in ' + event.elapsedTime + ' seconds.');
-	// };
 	speechSynthesis.speak(msg);
+}
+function affiche_message_live(text){
+	document.querySelector('#message_live').textContent =  text	
+	document.querySelector('#message_live').classList.remove('retracte')
+	document.querySelector('#message_live').classList.add('deroule')
+	setTimeout(function(){
+		document.querySelector('#message_live').textContent ="";
+		document.querySelector('#message_live').classList.remove('deroule')
+		document.querySelector('#message_live').classList.add('retracte')
+	},10000);
 }

@@ -1,108 +1,112 @@
 @import 'variables.css';
+
 /*************************************************/
-/* TOP MENU */
+/* TOP MENU DE droite */
 /*************************************************/
 
 header{
-  padding:10px;
-  background-color: #fff;
-  box-shadow: 1px 1px 4px 0 rgba(0,0,0,.1);
-  /*position: fixed;*/
-  /*width: 99%;*/
-  z-index: 3;
+	padding:5px;
+	padding-top:calc(var(--menu-hauteur)/8);
+	background-color: #fff;
+	box-shadow: 1px 1px 4px 0 rgba(0,0,0,.1);
+	/*position: fixed;*/
+	/*width: 99%;*/
+	z-index: 3;
+	height:var(--menu-hauteur);
 }
 
 header,header a, header a.hover, header a:link, header a:visited{
-  color: #fff;
+	color: #fff;
 }
 
 /* header */
-.header ul {
-  display:block;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-  overflow: hidden;
-  background-color: #333;
-  /* list-style-type: none; */
+.header .menu {
+	display:inline-block;
+	margin-top: 0;
+	padding: 0;
+	list-style: none;
+	overflow: hidden;
+	background-color: #333;
 }
 
 .header li a {
-  display: block;
-  padding: 20px 20px;
-  border-right: 1px solid #f4f4f4;
-  text-decoration: none;
-  /* list-style-type: none; */
+	display: block;
+	padding: 20px 20px;
+	border-right: 1px solid #f4f4f4;
+	text-decoration: none; 
+	height:calc(var(--menu-hauteur) - calc(1px) - calc(var(--menu-hauteur)/7));  
 }
 
-ul li {  list-style-type: none;
+.header li {
+	list-style-type: none;
+	
 }
-
 
 .header li a:hover,
 .header .menu-btn:hover {
-  background-color: #eee;
-	color:#000
+	background-color: #eee;
+	color:#000;
+	height:calc(var(--menu-hauteur) - calc(1px) - calc(var(--menu-hauteur)/7));
 }
 
 .header .logo {
-  display: block;
-  float: left;
-  font-size: 2em;
-  padding: 10px 20px;
-  text-decoration: none;
+	display: block;
+	float: left;
+	font-size: 2em;
+	padding-left: 10px ;
+	text-decoration: none;
 }
 
 /* menu */
 
-.header {background-color:#333}
+.header {background-color:#333;}
 .header .menu {
-  clear: both;
-  max-height: 0;
-  transition: max-height .2s ease-out;
+	clear: both;
+	max-height: 0;
+	transition: max-height .2s ease-out;
 }
 .header .menu .current {
 	background-color: #4CAF50;
-  color: white;
+	color: white;
 }
 
 /* menu icon */
 
 .header .menu-icon {
-  cursor: pointer;
-  display: inline-block;
-  float: right;
-  padding: 28px 20px;
-  position: relative;
-  user-select: none;
+	cursor: pointer;
+	display: inline-block;
+	float: right;
+	padding: calc(var(--menu-hauteur)/3) 20px;
+	position: relative;
+	user-select: none;
 }
 
 .header .menu-icon .navicon {
-  background: #fff;
-  display: block;
-  height: 2px;
-  position: relative;
-  transition: background .2s ease-out;
-  width: 18px;
+	background: #fff;
+	display: block;
+	height: 2px;
+	position: relative;
+	transition: background .2s ease-out;
+	width: 18px;
 }
 
 .header .menu-icon .navicon:before,
 .header .menu-icon .navicon:after {
-  background: #fff;
-  content: '';
-  display: block;
-  height: 100%;
-  position: absolute;
-  transition: all .2s ease-out;
-  width: 100%;
+	background: #fff;
+	content: '';
+	display: block;
+	height: 100%;
+	position: absolute;
+	transition: all .2s ease-out;
+	width: 100%;
 }
 
 .header .menu-icon .navicon:before {
-  top: 5px;
+	top: 5px;
 }
 
 .header .menu-icon .navicon:after {
-  top: -5px;
+	top: -5px;
 }
 
 /* menu btn */
@@ -118,20 +122,33 @@ ul li {  list-style-type: none;
 /* RESPONSIVE MENU 48em = 768px */
 
 @media (min-width: 48em) {
-  .header li {
-    float: left;
-	/* display:inline-block; */
-  }
-  .header li a {
-    padding: 20px 30px;
-  }
-  .header .menu {
-    clear: none;
-    float: right;
-    max-height: none;
-  }
-  .header .menu-icon {
-    display: none;
-  }
-  .header div{overflow: hidden;}
+	#outils_frame > ul{
+		display: inline-block;
+		position: absolute;
+	}
+	.header li {
+		float: left;
+		/* display:inline-block; */    
+	}
+	.header li a {
+		padding: 10px 20px;
+	}
+	.header .menu {
+		clear: none;
+		float: right;
+		max-height: none;
+	}
+	.header .menu-icon {
+		display: none;
+	}
+	.header div{overflow: hidden;}
+}
+@media (max-width: 48em) {
+	.header .menu {
+		position: fixed;
+		top:var(--menu-hauteur);
+		width:100vw;
+		padding-bottom:0px;
+		left:-5px;
+	}
 }

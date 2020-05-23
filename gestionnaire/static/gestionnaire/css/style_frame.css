@@ -1,8 +1,132 @@
 @import 'variables.css';
+@import url(https://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css);
 
 /*DEBUGGAGE*/
-div {border:0.2mm dashed red;}
-p {border:0.2mm dashed green;}
+/* p {border:0.2mm dashed green;} */
+/* div {border:0.2mm dashed red;} */
+/* li {border:0.2mm dashed gold;} */
+/* ul{border:0.2mm dashed hotpink;} */
+
+/*----------------------------
+	MENU DE LA BOITE A OUTILS
+-----------------------------*/
+/* Couleur des boutons */
+#outils_frame li.green{background-color:#4CAF50;color:#558058;}
+#outils_frame li.yellow{background-color:#f8c54d;color:#ab8426;} /**/
+
+/* Gestion des boutons */
+#outils_frame > ul{
+	display: flex;
+    left:120px;
+    top:calc(calc(var(--menu-hauteur)/2) - calc(var(--boite-outil-bouton-hauteur)/2));  
+	position: absolute;
+	max-height:var(--boite-outil-bouton-hauteur);
+	z-index:10;
+}
+#outils_frame > ul > li{ /* will style only the top level li */
+	list-style: none;
+	box-shadow: 0 0 10px rgba(100, 100, 100, 0.2) inset,1px 1px 1px #CCC;
+	line-height: 1;
+	margin: 1px;
+	border-radius: 3px;
+	position:relative;
+	margin-right:10px;
+}
+/* icone des boutons*/
+#outils_frame > ul > li > a{
+	color:inherit;
+	text-decoration:none !important;
+	font-size:20px;
+	padding: 5px;
+}
+#outils_frame > ul > li > .tools-pannel{
+	position:fixed;
+	background-color: var(--boite-outil-pannel-background);
+	opacity:0.90;
+	display:flex;
+	flex-direction:row;
+	justify-content: space-evenly;
+	top:var(--menu-hauteur);
+	width:100vw;
+	/* This is important for the show/hide CSS animation */
+	max-height:0px;
+	overflow:hidden;	
+	-webkit-transition:max-height 0.4s linear;
+	-moz-transition:max-height 0.4s linear;
+	transition:max-height 1s linear;
+	z-index:1000;
+	left:0;
+}
+/* This will trigger the CSS */
+/* transition animation on hover */
+#outils_frame .green:hover .tools-pannel{
+  width:100vw;
+  max-height:100vh; /* Increase when adding more dropdown items */
+}
+
+/* DISPOSITION à l'interieur de la boite à outils*/
+.tools-pannel, .tools-pannel label{
+	color:var(--boite-outil-texte-color);
+	font-size: 2vmin;
+}
+/*Structure flex de ts les sous elements pour un déroulé homogène de la transition*/
+.tools-boutons,
+.tools-modif,
+.tools-modif ul,
+.tools-pannel h1 {
+	display: flex;
+	flex-direction: column;	
+	justify-content: space-evenly;
+	align-content: center;
+}
+.tools-boutons,.tools-modif {flex-grow:1;}
+.tools-boutons,.tools-modif ul  {
+	padding: 0 10px 10px 10px;
+	margin: 0px;
+}
+.tools-pannel h1{
+	color: #fff;
+	font-size: 6vmin;
+	padding: 10px 10px 0px 10px;
+	align-self: flex-end;
+}
+.tools-pannel h2{
+	color: #fff;
+	font-size: 3vmin;
+	padding:10px;
+	margin-top:15px;	
+}
+.tools-boutons {
+	border-left: 2px solid var(--boite-outil-texte-color);
+	border-right: 2px solid var(--boite-outil-texte-color);
+}
+.tools-modif li{
+	list-style: none;
+
+}
+.tools-modif input{
+	margin:10px;
+	background: rgba(255,255,255,0.1);
+	border: none;
+	border-radius: 5px;
+	font-size: 3vmin;
+	height: auto;
+	outline: 0;
+	padding: 10px;
+	background-color: var(--formulaire-saisie-bkg);
+	color: var(--formulaire-saisie-color);
+	box-shadow: 0 1px 0 rgba(0,0,0,0.03) inset;
+	width:70%;
+}
+.tools-boutons div{display:flex;flex-direction:row;}
+.tools-boutons div span{display:flex;flex-direction:column;justify-content:center;}
+.tools-pannel button{font-size: 4vmin;margin:10px;min-width:50%;max-height:7vmin;}
+
+#outils_frame .green:hover #sombre{opacity:0.8;}
+
+
+
+
 *, *:before, *:after {
   -moz-box-sizing: border-box;
   -webkit-box-sizing: border-box;
@@ -12,7 +136,16 @@ p {border:0.2mm dashed green;}
 /*************************************************/
 /* DISPOSITION du SCOREBOARD */
 /*************************************************/
-
+#message_live {
+	display:block;
+	max-height:50px;
+	background-color:#4CAF50;
+	color:#fff;/*#4CAF50 FF52AE;*/
+	font-size:2em;
+	padding:5px;
+	margin:2px 2px 0px 2px;
+	text-align:center;	
+}
 .frame_wrapper {
   display: block; /* IE fix */
   display: flex; /* crée un contexte flex pour ses enfants */
@@ -90,7 +223,31 @@ section{ /*AJOUT FLEX MEDIAQ*/
 	cursor: pointer;
 	background:transparent;
 }
-.invisible{display:none;}
+.invisible{
+	display:none !important;
+}
+
+.retracte{
+	height:0px;
+	/* display:none !important; */
+	margin: 0px !important;
+	padding: 0px !important;
+	-webkit-transition:height, 1s linear;
+    -moz-transition: height, 1s linear;
+    -ms-transition: height, 1s linear;
+    -o-transition: height, 1s linear;
+    transition: height, 1s linear;
+}
+/* .retracte.ouvert{	*/
+.deroule{
+    height:275px;
+    background: #555;
+    -webkit-transition:height, 1s linear;
+    -moz-transition: height, 1s linear;
+    -ms-transition: height, 1s linear;
+    -o-transition: height, 1s linear;
+    transition: height, 1s linear;
+    }	
 
 
 /*************************************************/
@@ -117,7 +274,7 @@ section {
 .break span{font-size:13vmin;}
 .match_score span{font-size:8vmin;}
 .distance{font-size:4vmin;}
-.break{	display: none; color:lightgreen;} /*par défaut le break n'est pas affiché (cf. .active)*/
+.break{	display: none; color:#4CAF50;} /*par défaut le break n'est pas affiché (cf. .active)*/
 
 .frame_reprise, .scoref {cursor: pointer;}
 
@@ -184,6 +341,18 @@ background-image: -webkit-radial-gradient(0% 25%, ellipse farthest-corner, #666 
 	.score{margin-top:-8vmin;}
 	.scoref{margin-bottom:-8vmin;}	
 	.match-infos, .timer-infos, .frame_reprise{justify-content: space-evenly;}	
+	#outils_frame > ul > li > .tools-pannel{
+		display:flex;
+		flex-direction:column;
+		justify-content: space-evenly;}
+	.tools-boutons {
+		/* padding-left: 10px; */
+		border-bottom: 2px solid var(--boite-outil-texte-color);
+		border-top: 2px solid var(--boite-outil-texte-color);
+		border-left:none;
+		border-right: none;
+	}
+	.tools-pannel h1 {align-self: flex-start;}
 }
 @media (min-aspect-ratio: 3001/5000) and (max-aspect-ratio: 7000/5000) {/*type carré*/
 	section:nth-child(2) {
@@ -194,6 +363,7 @@ background-image: -webkit-radial-gradient(0% 25%, ellipse farthest-corner, #666 
 	/*Gestion des marges à cause de la police merdique*/
 	.score{margin-top:-12vmin;}
 	.scoref{margin-bottom:-12vmin;}
+	.nom span{font-size:5.5vmin;}
 }
 
 @media (min-aspect-ratio: 7001/5000){/*ecran large*/
@@ -202,30 +372,4 @@ background-image: -webkit-radial-gradient(0% 25%, ellipse farthest-corner, #666 
 	.reprise{flex-direction:column;}
 }
 	
-/*On force les formulaires à s'ecrire sur la même ligne*/
-.formulaire li{
-  display:  inline-block;
-} 
-.formulaire{
-  padding: 10px 20px;
-  background: var(--formulaire-background);
-  border-radius: 8px;
-  max-width: 100%;
-  min-width: 400px;
-  margin-top:15px;
-}
-.formulaire input[type="text"],
-.formulaire input[type="password"],
-.formulaire input[type="date"],
-.formulaire input[type="datetime"],
-.formulaire input[type="email"],
-.formulaire input[type="number"],
-.formulaire input[type="search"],
-.formulaire input[type="tel"],
-.formulaire input[type="time"],
-.formulaire input[type="url"],
-.formulaire textarea,
-.formulaire select 
-{
-	width:auto;
-}
+
