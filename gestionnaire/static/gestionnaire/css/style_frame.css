@@ -1,5 +1,5 @@
 @import 'variables.css';
-@import url(https://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css);
+@import url(https://netdna.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.css);
 
 /*DEBUGGAGE*/
 /* p {border:0.2mm dashed green;} */
@@ -120,6 +120,7 @@
 }
 .tools-boutons div{display:flex;flex-direction:row;}
 .tools-boutons div span{display:flex;flex-direction:column;justify-content:center;}
+
 .tools-pannel button{font-size: 4vmin;margin:10px;min-width:50%;max-height:7vmin;}
 
 #outils_frame .green:hover #sombre{opacity:0.8;}

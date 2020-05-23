@@ -21,12 +21,39 @@ var racine_site=window.location.protocol+'//'+window.location.hostname
 if (window.location.port){racine_site=racine_site+":"+window.location.port}
 var modal_url_OK=""
 var modal_url_Cancel=racine_site //"http://192.168.1.28:8000/"
-const TTS_OK=true // pour activer/desactiver le TTS
 
 if (arbitre){//affichage des outils dans le menu
 	document.querySelector('.green').classList.remove('invisible')
 	document.querySelector('.yellow').classList.remove('invisible')
 }
+
+//Gestion du TTS (forcer la valeur par défaut ci-dessous)
+var TTS_OK=true // pour activer/desactiver le TTS
+btn_TTS=document.querySelector('#toggle-TTS')
+txt_TTS=document.querySelector('#label-TTS')
+btn_TTS.classList.remove('fa-toggle-on','fa-toggle-off');
+if (TTS_OK){
+	btn_TTS.classList.add('fa-toggle-on');
+	txt_TTS.textContent="Désactiver le TTS";
+}
+else{
+	btn_TTS.classList.add('fa-toggle-off');
+	txt_TTS.textContent="Activer le TTS";
+}
+btn_TTS.addEventListener('click', () => {
+	if (btn_TTS.classList.contains('fa-toggle-on')){
+		TTS_OK=false;
+		txt_TTS.textContent="Activer le TTS";
+	}
+	else{
+		TTS_OK=true;
+		txt_TTS.textContent="Désactiver le TTS";		
+	}
+	btn_TTS.classList.toggle('fa-toggle-off');
+	btn_TTS.classList.toggle('fa-toggle-on');
+});
+
+
 
 FrameSocket.onmessage = function(e) {
 	const data = JSON.parse(e.data);	
