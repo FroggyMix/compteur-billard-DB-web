@@ -15,7 +15,6 @@ const queryString = window.location.search;
 const urlParams = new URLSearchParams(queryString);
 var arbitre=true //='arbitre' 
 if (urlParams.get('ref')=="false"){arbitre=false;}//temp='spectateur';}
-//const demandeur=temp
 
 var racine_site=window.location.protocol+'//'+window.location.hostname
 if (window.location.port){racine_site=racine_site+":"+window.location.port}
@@ -52,8 +51,6 @@ btn_TTS.addEventListener('click', () => {
 	btn_TTS.classList.toggle('fa-toggle-off');
 	btn_TTS.classList.toggle('fa-toggle-on');
 });
-
-
 
 FrameSocket.onmessage = function(e) {
 	const data = JSON.parse(e.data);	
@@ -181,7 +178,6 @@ FrameSocket.onmessage = function(e) {
 		if (document.querySelector('#message_live').textContent ==  ""){document.querySelector('#message_live').classList.add('retracte')}
 	}
 };
-
 FrameSocket.onclose = function(e) {
 	console.error('Chat socket closed unexpectedly');
 };
@@ -249,6 +245,19 @@ document.querySelector('#echange_couleurs').onclick = function(e) {
 	document.querySelector('.joueur.droite').classList.toggle('couleur1');
 	document.querySelector('.joueur.droite').classList.toggle('couleur2');
 }
+document.querySelector('#conceder').onclick = function(e) {
+	nom_joueur=document.querySelectorAll('.nom')[get_joueur_actif()-1].querySelector('span').innerText;
+	
+	if(confirm("Confirmez-vous que " + nom_joueur + " concède la frame ? Cette action est irrémédiable.")){
+		if (arbitre) {
+			// window.alert(nom_joueur);
+			FrameSocket.send(JSON.stringify({
+			'action': 'concede',
+			'joueur': get_joueur_actif(),
+			}));
+		}
+	}		
+}
 function chrono_frame(){
 	end = new Date()
     diff = end - debut_frame2
@@ -303,7 +312,7 @@ function JouerSon(nom_son) {
 	        var sound = document.getElementById(nom_son);  
             sound.play()
 }
-function ws_redirect(action){	 
+function ws_redirect(action){		
 	if(action=="OK"){urle=modal_url_OK}
 	else {urle=modal_url_Cancel}
 	FrameSocket.send(JSON.stringify({

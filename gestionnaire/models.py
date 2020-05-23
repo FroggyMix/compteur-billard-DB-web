@@ -148,10 +148,11 @@ class Match(models.Model):
 			vainqueurm = 0			
 			if self.scorem_j1() >= objectif: vainqueurm=1
 			if self.scorem_j2() >= objectif: vainqueurm=2
-			# print('MMMMMMMMMMMMMMMMM Point Match : vainqueur = ',vainqueurm)
 			if vainqueurm > 0:
 				#c'est la fin du match
-				if self.d_fin is None: Match.objects.filter(pk=self.pk).update(d_fin=timezone.localtime(timezone.now()))
+				if self.d_fin is None: 
+					Match.objects.filter(pk=self.pk).update(d_fin=timezone.localtime(timezone.now()))
+					print('[M{}] Le joueur {} remporte la frame'.format(self.pk,vainqueurm))
 				#on determine la frame du match dans laquelle il faut ecrire la fin de match
 				fr = Frame.objects.filter(match=self).order_by('-num').first()
 				if not fr.frameevent_exists('victoire-match'):
@@ -289,7 +290,6 @@ class Frame(models.Model):
 		###				0 en cas dégalité
 		###				1 ou 2 si un des joueurs a gangé
 		vainqueur = FrameEvent.objects.filter(frame=self,event_type__nom='victoire-frame').values_list('crediteur',flat=True)
-		# print('vainqueur.first() : {}'.format(vainqueur.first()))
 		if vainqueur.first() is not None:
 			return vainqueur.first()
 		else:
@@ -335,11 +335,8 @@ class Frame(models.Model):
 		return  not (FrameEvent.objects.filter(frame=self,event_type__nom='reprise-egalisatrice').count() == 0)			
 	def frame_terminee(self): #ECRITURE
 		### Renvoie 
-		# print('>>>>>>>>>>>> Calcul de la fin de frame')
 		dernier_evt = FrameEvent.objects.filter(frame=self).order_by('-d_horodatage').values_list('event_type__nom',flat=True).first()
 		joueur_vainqueur=''
-		# print(dernier_evt)
-		# print(self.vainqueur())
 		if (FrameEvent.objects.filter(frame=self,event_type__nom='victoire-frame').count() == 0):
 			if dernier_evt == "pass" and self.vainqueurf() == -1:
 				id_autre = 3-self.engageur_frame()
@@ -362,7 +359,8 @@ class Frame(models.Model):
 						elif self.scoref_j1()/dist1 < self.scoref_j2()/dist2: joueur_vainqueur=2
 						else : joueur_vainqueur=0
 				if (self.match.besoin_de_reprise_egalisatrice() and score_autre >= dist_autre): joueur_vainqueur = id_autre
-			# print('vainqueur : {}'.format(joueur_vainqueur))
+			if self.frameevent_exists("concedeF"):
+				joueur_vainqueur = 3 - FrameEvent.objects.filter(frame=self,event_type__nom='concedeF').values_list('crediteur',flat=True).first()
 			if joueur_vainqueur != "":
 				#on insere un évenement victoire-frame
 				FrameEvent.objects.create(event_type=EventType.objects.get(nom='victoire-frame'),frame=self,crediteur=joueur_vainqueur)
@@ -370,6 +368,7 @@ class Frame(models.Model):
 				Frame.objects.filter(pk=self.pk).update(d_fin=timezone.localtime(timezone.now()))
 				#on insere une nouvelle frame avec num+=1 si le match n'est pas fini
 				self.match.match_termine()
+				print('[M{}-F{}] Le joueur {} remporte la frame'.format(self.match.pk,self.pk,joueur_vainqueur))
 				if self.match.vainqueurm() < 1: Frame.objects.create(match=self.match,num=self.num+1)
 	def reprise_egalisatrice(self):
 		dernier_evt = FrameEvent.objects.filter(frame=self).order_by('-d_horodatage').values_list('event_type__nom',flat=True).first()
@@ -380,8 +379,6 @@ class Frame(models.Model):
 	def dureef(self): #lecture
 		#### Cette fonction a été changée pour renvoyer unde durée : il faut changer son nom ainsi que dans frame_state qui l'appelle
 		if self.d_debut:
-			# print('D D D D D D D D D D',str(datetime.timedelta(seconds=self.dureef_reelle_en_secondes())))
-			# print('D D D D D D D D D D Heure debut frame=',self.d_debut.strftime("%H:%M:%S"))
 			return str(datetime.timedelta(seconds=self.dureef_reelle_en_secondes()))
 		else: return "00:00:00"		
 	def debutant(self): #lecture

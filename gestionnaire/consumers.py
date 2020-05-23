@@ -88,6 +88,19 @@ class FrameConsumer_sync(WebsocketConsumer):
 			#Demande d'annulation du dernier coup
 			Frame.objects.get(pk=self.frame_id).undo_last_event()
 		
+		if text_data_json['action'] == 'concede':
+			#Le joueur actif concede la frame
+			joueur=text_data_json['joueur']
+			print ('Le joueur {} a concédé la frame.'.format(joueur))
+			FrameEvent.objects.create(event_type=EventType.objects.get(nom='concedeF'),frame=Frame.objects.get(pk=self.frame_id),crediteur=joueur)
+			# FrameEvent.objects.create(event_type=EventType.objects.get(nom='victoire-frame'),frame=Frame.objects.get(pk=self.frame_id),crediteur=3-joueur)
+			
+			#On lance les traitements de reprise egalisatrice, de fin de frame et de match
+			# temp = Frame.objects.get(pk=self.frame_id).reprise_egalisatrice_detecte()
+			temp = Frame.objects.get(pk=self.frame_id).frame_terminee()
+			temp = Frame.objects.get(pk=self.frame_id).match.match_termine()
+			print ('Le joueur {} a concédé la frame.'.format(joueur))
+		
 		if text_data_json['action'] == 'redirect':
 			#demande de changement d'url (frame suivante ou retour frame_liste
 			async_to_sync(self.channel_layer.group_send)(self.frame_group_name,{'type': 'redirect','message':{'url':text_data_json['url']}})
