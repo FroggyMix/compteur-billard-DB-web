@@ -53,7 +53,7 @@
 	overflow:hidden;	
 	-webkit-transition:max-height 0.4s linear;
 	-moz-transition:max-height 0.4s linear;
-	transition:max-height 1s linear;
+	transition:max-height 0.4s linear;
 	z-index:1000;
 	left:0;
 }
@@ -191,17 +191,26 @@ section{ /*AJOUT FLEX MEDIAQ*/
 
 .frame_bottom{flex-grow:1;background:#333}
 
+
+
+
+
+
 /*Joueur ACTIF*/
-.gauche.joueur_actif{color:var(--joueur-blanc);}
-.droite.joueur_actif{color:var(--joueur-jaune);}
+.couleur1.joueur_actif{color:var(--joueur-bille-couleurA);}
+.couleur2.joueur_actif{color:var(--joueur-bille-couleurB);}
 .joueur_actif .break{display: block;}
 
 /*Différence joueur droite/gauche*/
 .gauche, .droite{color:var(--joueur-inactif);}
-.droite{text-align:left}
-.droite .nom{justify-content:start;color:var(--joueur-jaune);}
-.gauche{text-align:right}
-.gauche .nom{justify-content:end;color:#fff;}
+.droite{text-align:left;}
+.droite .nom{justify-content:start;}
+.gauche{text-align:right;}
+.gauche .nom{justify-content:end;}
+.couleur1 .nom{color:var(--joueur-bille-couleurA);}
+.couleur2 .nom{color:var(--joueur-bille-couleurB);}
+
+
 
 .actions_wrapper{
 	padding:10px;

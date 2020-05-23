@@ -216,7 +216,12 @@ document.querySelector('#annuler_action').onclick = function(e) {
 		}));
 	}
 };
-
+document.querySelector('#echange_couleurs').onclick = function(e) {
+	document.querySelector('.joueur.gauche').classList.toggle('couleur1');
+	document.querySelector('.joueur.gauche').classList.toggle('couleur2');
+	document.querySelector('.joueur.droite').classList.toggle('couleur1');
+	document.querySelector('.joueur.droite').classList.toggle('couleur2');
+}
 function chrono_frame(){
 	end = new Date()
     diff = end - debut_frame2

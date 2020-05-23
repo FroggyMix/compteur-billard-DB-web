@@ -34,7 +34,7 @@
 							<div><button class="fa fa-undo" id="annuler_action"></button> <span>Annuler la dernière action</span></div>
 							<div><button class="fa fa-sign-out">1</button><span>Joueur1 concède</span></div> 
 							<div><button class="fa fa-sign-out">2</button><span>Joueur2 concède</span></div> 
-							<div><button class="fa fa-exchange"></button><span>Echanger la couleur des billes</span></div> 
+							<div><button class="fa fa-exchange" id="echange_couleurs"></button><span>Echanger la couleur des billes</span></div> 
 							<div><button class="fas fa-toggle-on"></button><span class="">Désactiver le TTS</span></div> 
 							
 						</div>
@@ -73,7 +73,7 @@
 	</div>	
 
 	<div class="frame_wrapper">	
-		<section class="joueur gauche joueur_actif">
+		<section class="joueur gauche couleur1 joueur_actif ">
 			<div class="score">
 				<div class="scoref">
 					<span id="scoref_j1"></span><span class="distance">{% if frame.match.fr_distance_j1 %}/{{ frame.match.fr_distance_j1 }}{% endif %}</span>
@@ -109,7 +109,7 @@
 			</div>
 		</section>
 		
-		<section class="joueur droite">
+		<section class="joueur droite couleur2">
 			<div class="score">
 				<div class="scoref">
 					<span id="scoref_j2"></span><span class="distance">{% if frame.match.fr_distance_j2 %}/{{ frame.match.fr_distance_j2 }}{% endif %}</span>
@@ -129,18 +129,6 @@
 			</div>
 		</section>	
 	</div> <!-- /frame_wrapper -->
-
-	<div class="actions_wrapper formulaire invisible" >
-		<H3>Valeurs à ajouter (négatifs autorisés) pour :</H3>
-		<ul><li><label for="maj_J1">Joueur 1 :</label>
-		<input type="number" id="maj_J1" name="maj_J1" min="-100" max="100">
-		</li><li><label for="maj_J1">Joueur 2 :</label>
-		<input type="number" id="maj_J2" name="maj_J2" min="-100" max="100">
-		</li><li><label for="maj_J1">Reprise :</label>
-		<input type="number" id="maj_reprise" name="maj_reprise" min="-100" max="100">
-		</li><input id="maj_scores_submit" type="submit" value="Modifier">
-		</ul>
-	</div>     
 
 	<div class="stat_wrapper invisible"> 
 		<H3>Statistiques</H3>
