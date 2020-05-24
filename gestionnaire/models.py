@@ -152,14 +152,18 @@ class Match(models.Model):
 				#c'est la fin du match
 				if self.d_fin is None: 
 					Match.objects.filter(pk=self.pk).update(d_fin=timezone.localtime(timezone.now()))
-					print('[M{}] Le joueur {} remporte la frame'.format(self.pk,vainqueurm))
+					# print('[M{}] Le joueur {} remporte la frame'.format(self.pk,vainqueurm))
 				#on determine la frame du match dans laquelle il faut ecrire la fin de match
 				fr = Frame.objects.filter(match=self).order_by('-num').first()
 				if not fr.frameevent_exists('victoire-match'):
 					fr = Frame.objects.filter(match=self).order_by('-num').first()
-					FrameEvent.objects.create(event_type=EventType.objects.get(nom='victoire-match'),frame=fr,crediteur=vainqueurm)
+					fr.ajoute_evt('victoire-match',vainqueurm)
+					#FrameEvent.objects.create(event_type=EventType.objects.get(nom='victoire-match'),frame=fr,crediteur=vainqueurm)
 	def score_match_dans_framelive(self):
 		return "{} ({}) {}".format(self.scorem_j1(),self.nb_frames,self.scorem_j2())
+	def debutem(self): #ECRITURE
+		if not self.d_debut : Match.objects.filter(pk=self.pk).update(d_debut=timezone.localtime(timezone.now()))
+
 	class Meta:
 		db_table = 'Match'
 		verbose_name_plural = "MatchModel"
@@ -287,7 +291,7 @@ class Frame(models.Model):
 				return self.engageur_frame()
 	def vainqueurf(self): #lecture
 		### Renvoie : 	-1 si la frame n'est pas encore terminé
-		###				0 en cas dégalité
+		###				0 en cas d'égalité
 		###				1 ou 2 si un des joueurs a gangé
 		vainqueur = FrameEvent.objects.filter(frame=self,event_type__nom='victoire-frame').values_list('crediteur',flat=True)
 		if vainqueur.first() is not None:
@@ -295,27 +299,25 @@ class Frame(models.Model):
 		else:
 			return -1
 	def reprise_egalisatrice_detecte(self): #ECRITURE
-		# print('>>>>>>>>>>>> Calcul de la reprise egalisatrice')
-		#print(self.reprise_egalisatrice_existe())
 		dernier_evt = FrameEvent.objects.filter(frame=self).order_by('-d_horodatage').values_list('event_type__nom',flat=True).first()
 		if dernier_evt == 'pass':
-			# print('>>>>>>>> il n existe as encore de reprise egalisatrice')
 			if self.match.reprises_limitees():
 				# print('>>>>> match à Reprise limitée')
-				# print(self.reprise())
-				# print(self.match.fr_limite_nb_reprises)
 				dist1 = 999999 if not self.match.fr_distance_j1 else self.match.fr_distance_j1
 				dist2 = 999999 if not self.match.fr_distance_j2 else self.match.fr_distance_j2
 				if self.scoref_j1() < dist1 and self.scoref_j2() < dist2 and self.reprise() >= self.match.fr_limite_nb_reprises:
 					print('>> Aucun joueur na atteint sa cible mais la reprise sa limite')
 					if self.joueur_actif() == self.engageur_frame():
 						#On informe que le joueur actif joue son dernier coup
-						if not self.frameevent_exists('dernier-coup'):FrameEvent.objects.create(event_type=EventType.objects.get(nom='dernier-coup'),frame=self,crediteur=self.joueur_actif())
+						if not self.frameevent_exists('dernier-coup'):
+							#FrameEvent.objects.create(event_type=EventType.objects.get(nom='dernier-coup'),frame=self,crediteur=self.joueur_actif())
+							self.ajoute_evt('dernier-coup',self.joueur_actif())
 						return "prochain"
 					else:
 						#On enregistre et informe de la reprise égalisatrice (à consition quelle n'ait pas déjà été enregistrée)
 						if not self.reprise_egalisatrice_existe(): 
-							FrameEvent.objects.create(event_type=EventType.objects.get(nom='reprise-egalisatrice'),frame=self,crediteur=self.joueur_actif())
+							self.ajoute_evt('reprise-egalisatrice',self.joueur_actif())
+							#FrameEvent.objects.create(event_type=EventType.objects.get(nom='reprise-egalisatrice'),frame=self,crediteur=self.joueur_actif())
 							return "maintenant"			
 			score_engageur = self.scoref_j1() if self.engageur_frame()==1 else self.scoref_j2()
 			if self.engageur_frame()==1:
@@ -324,12 +326,13 @@ class Frame(models.Model):
 				dist_engageur = self.match.fr_distance_j2 if self.match.fr_distance_j2 else 999999
 				
 			if self.match.besoin_de_reprise_egalisatrice() and score_engageur >= dist_engageur:
-				print('>>>>>>>> match à Reprise egalisatrice avec engageur qui a atteint son score')				
+				print('>> match à Reprise egalisatrice avec engageur qui a atteint son score')				
 				if not self.reprise_egalisatrice_existe():
-					FrameEvent.objects.create(event_type=EventType.objects.get(nom='reprise-egalisatrice'),frame=self,crediteur=self.joueur_actif())
+					#FrameEvent.objects.create(event_type=EventType.objects.get(nom='reprise-egalisatrice'),frame=self,crediteur=self.joueur_actif())
+					self.ajoute_evt('reprise-egalisatrice',self.joueur_actif())
 					return "maintenant"	
 		if dernier_evt == 'reprise-egalisatrice':
-			print('Dernier evt = REG => on envoie maintenant')
+			#print('Dernier evt = REG => on envoie maintenant')
 			return "maintenant"		
 	def reprise_egalisatrice_existe(self): #lecture
 		return  not (FrameEvent.objects.filter(frame=self,event_type__nom='reprise-egalisatrice').count() == 0)			
@@ -355,20 +358,24 @@ class Frame(models.Model):
 						joueur_vainqueur=2
 					else: 
 						# On compare les moyennes
+						print('comparaison des moyennes')
+						print('J1 : ',self.scoref_j1()/dist1)
+						print('J2 : ',self.scoref_j2()/dist2)
 						if self.scoref_j1()/dist1 > self.scoref_j2()/dist2: joueur_vainqueur=1
 						elif self.scoref_j1()/dist1 < self.scoref_j2()/dist2: joueur_vainqueur=2
 						else : joueur_vainqueur=0
-				if (self.match.besoin_de_reprise_egalisatrice() and score_autre >= dist_autre): joueur_vainqueur = id_autre
+				if (self.match.besoin_de_reprise_egalisatrice() and score_autre >= dist_autre and not self.reprise_egalisatrice_existe()): joueur_vainqueur = id_autre
 			if self.frameevent_exists("concedeF"):
 				joueur_vainqueur = 3 - FrameEvent.objects.filter(frame=self,event_type__nom='concedeF').values_list('crediteur',flat=True).first()
 			if joueur_vainqueur != "":
 				#on insere un évenement victoire-frame
-				FrameEvent.objects.create(event_type=EventType.objects.get(nom='victoire-frame'),frame=self,crediteur=joueur_vainqueur)
+				self.ajoute_evt('victoire-frame',joueur_vainqueur)
+				#FrameEvent.objects.create(event_type=EventType.objects.get(nom='victoire-frame'),frame=self,crediteur=joueur_vainqueur)
 				#on insere une fin de frame
 				Frame.objects.filter(pk=self.pk).update(d_fin=timezone.localtime(timezone.now()))
 				#on insere une nouvelle frame avec num+=1 si le match n'est pas fini
 				self.match.match_termine()
-				print('[M{}-F{}] Le joueur {} remporte la frame'.format(self.match.pk,self.pk,joueur_vainqueur))
+				#print('[M{}-F{}] Le joueur {} remporte la frame'.format(self.match.pk,self.pk,joueur_vainqueur))
 				if self.match.vainqueurm() < 1: Frame.objects.create(match=self.match,num=self.num+1)
 	def reprise_egalisatrice(self):
 		dernier_evt = FrameEvent.objects.filter(frame=self).order_by('-d_horodatage').values_list('event_type__nom',flat=True).first()
@@ -387,17 +394,20 @@ class Frame(models.Model):
 			return -1
 		else:
 			return f.values_list("crediteur",flat=True)[0]
-	def next_frame_existe(self):
+	def next_frame_existe(self): #lecture
 		f=Frame.objects.filter(match=self.match, num=self.num+1)
 		if f:
 			return f.first().pk;
-	def undo_last_event(self):
+	def undo_last_event(self): #ECRITURE
 		dernier_evt = FrameEvent.objects.filter(frame=self).order_by('-d_horodatage').first()
 		if dernier_evt: dernier_evt.undo()
-	def correction_score(self, crediteur, montant):
+	def correction_score(self, crediteur, montant): #ECRITURE
 		###Additionne montant points(accepte les negatifs) au créditeur(0, 1 ou 2)
 		FrameEvent.objects.create(event_type=EventType.objects.get(nom='correction'),frame=self,crediteur=crediteur,points=montant)	
-
+	def ajoute_evt(self,evt,crediteur=0,points=""): #ECRITURE
+		temp=FrameEvent.objects.insere_evt(self,evt,crediteur,points)
+	def debutef(self): #ECRITURE
+		if not self.d_debut : Frame.objects.filter(pk=self.pk).update(d_debut=timezone.localtime(timezone.now()))
 ###########  E V E N T   T Y P E #############
 class EventType(models.Model):
 	nom = models.CharField(max_length=32, unique=True)
@@ -421,8 +431,14 @@ class EventType(models.Model):
 			return f'{self.nom}'
 	def get_absolute_url(self):
 		return reverse('event_type', args=[self.pk])
-
 ###########  F R A M E E V E N T #############
+class FrameEventManager(models.Manager):
+	def insere_evt(self,frame,evt,crediteur=0,points=""):
+		if points:
+			FrameEvent.objects.create(event_type=EventType.objects.get(nom=evt),frame=frame,crediteur=crediteur,points=points)
+		else:
+			FrameEvent.objects.create(event_type=EventType.objects.get(nom=evt),frame=frame,crediteur=crediteur)
+		print('EVT-[M{}-F{}] Joueur {} : {} '.format(frame.match.pk,frame.pk,crediteur,evt.upper()))
 class FrameEvent(models.Model):
 	frame = models.ForeignKey(Frame, on_delete=models.CASCADE)
 	crediteur = models.SmallIntegerField() # 0 = reprise ; 1=joueur1 ; 2=joueur2
@@ -436,6 +452,8 @@ class FrameEvent(models.Model):
 		('ia-son', 'IA-son')
 		)
 	origine = models.CharField(max_length=15, choices=TYPE_ORIGINE, verbose_name="Origine de l'enregistrement", default='system')
+	objects=FrameEventManager()# Custom manager
+	
 	class Meta:
 		db_table = 'FrameEvent'
 		verbose_name_plural = "FrameEventModel"
@@ -445,9 +463,10 @@ class FrameEvent(models.Model):
 		return f'{self.frame} - {self.d_horodatage.strftime("%H:%M:%S")} - {self.crediteur} : {self.event_type} (+ {self.points}pts)'
 	def get_absolute_url(self):
 		return reverse('frame_event', args=[self.pk])
-	def undo(self,profondeur=""): #ECRITURE
-		print('Annulation ',self.event_type.nom,' de prof= ',profondeur)
-		if profondeur: FrameEvent.objects.filter(pk__in=FrameEvent.objects.filter(frame=self.frame).order_by('-d_horodatage').values_list('pk')[0:profondeur]).delete()
+	def undo(self,profondeur=""): #ECRITURE		
+		if profondeur: 
+			FrameEvent.objects.filter(pk__in=FrameEvent.objects.filter(frame=self.frame).order_by('-d_horodatage').values_list('pk')[0:profondeur]).delete()
+			print('EVT-[M{}-F{}] Annulation de {} (profondeur : {})'.format(self.frame.match.pk,self.frame.pk,self.event_type.nom.upper(),profondeur))
 		elif self.event_type.nom in ["score", "pass","toss-engage","engage"]: self.undo(1)
 		elif self.event_type.nom == "reprise-egalisatrice": self.undo(2)
 		elif self.event_type.nom == "correction": pass
