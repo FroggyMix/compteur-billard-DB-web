@@ -20,6 +20,7 @@ var racine_site=window.location.protocol+'//'+window.location.hostname
 if (window.location.port){racine_site=racine_site+":"+window.location.port}
 var modal_url_OK=""
 var modal_url_Cancel=racine_site //"http://192.168.1.28:8000/"
+var modal_ouverte = false // permet de savoir is une modale est en cours 
 
 if (arbitre){//affichage des outils dans le menu
 	document.querySelector('.green').classList.remove('invisible')
@@ -27,7 +28,7 @@ if (arbitre){//affichage des outils dans le menu
 }
 
 //Gestion du TTS (forcer la valeur par défaut ci-dessous)
-var TTS_OK=true // pour activer/desactiver le TTS
+var TTS_OK=false // pour activer/desactiver le TTS
 btn_TTS=document.querySelector('#toggle-TTS')
 txt_TTS=document.querySelector('#label-TTS')
 btn_TTS.classList.remove('fa-toggle-on','fa-toggle-off');
@@ -95,15 +96,17 @@ FrameSocket.onmessage = function(e) {
 		else{
 			if (data.message.numf == 1){
 				if (arbitre){
+					modal_ouverte = true;
 					toss_modal.showModal();
 					if (TTS_OK) {speak("Quel joueur engage ?");}}
-				else{affiche_message_live("En attente de l'identificatio du joueur qui commence")}
+				else{affiche_message_live("En attente de l'identification du joueur qui commence")}
 				
 			}
 			else{
 				discours = "Cliquer lorsque le joueur "+joueur_actif+" est prêt à engager"
 				if (arbitre){
 					document.getElementById('message_start_modal').innerText = discours;
+					modal_ouverte = true;
 					start_modal.showModal();
 					if (TTS_OK) {speak(discours);}
 				}
@@ -119,6 +122,7 @@ FrameSocket.onmessage = function(e) {
 				if (TTS_OK) {speak(discours);}
 				modal_url_OK="";
 				document.getElementById('message_info_modal').innerText = discours;
+				modal_ouverte = true;
 				info_modal.showModal();
 			}
 			else{//Spectateur
@@ -131,6 +135,7 @@ FrameSocket.onmessage = function(e) {
 				if (TTS_OK) {speak(discours);}				
 				modal_url_OK="";
 				document.getElementById('message_info_modal').innerText = discours;
+				modal_ouverte = true;
 				info_modal.showModal();
 			}
 			else{
@@ -156,6 +161,7 @@ FrameSocket.onmessage = function(e) {
 				if (arbitre){
 					if (TTS_OK) {speak(discours);}
 					document.getElementById('message_info_modal').innerText = discours;
+					modal_ouverte = true;
 					info_modal.showModal();
 				}
 				else{affiche_message_live(discours)}
@@ -170,6 +176,7 @@ FrameSocket.onmessage = function(e) {
 				if (arbitre){
 					if (TTS_OK) {speak(discours);}
 					document.getElementById('message_info_modal').innerText =discours;
+					modal_ouverte = true;
 					info_modal.showModal();
 				}
 				else{affiche_message_live(discours)}
@@ -200,45 +207,10 @@ document.querySelector('#maj_scores_submit').onclick = function(e) {
 	modif_j2_DOM.value = '';
 	modif_reprise_DOM.value = '';
 };
-document.querySelector('.gauche').onclick = function(e) {
-	if (arbitre && get_joueur_actif() == 1 && frame_terminee == false) {
-		JouerSon("son-point");
-		const score_j1_DOM = document.querySelector('#scoref_j1');
-		FrameSocket.send(JSON.stringify({
-			'action': 'score',
-			'joueur': "1",
-			'points': "1",
-		}));
-	}
-};
-document.querySelector('.droite').onclick = function(e) {
-	if (arbitre && get_joueur_actif() == 2 && frame_terminee == false) {
-		JouerSon("son-point");
-		const score_j2_DOM = document.querySelector('#scoref_j2');
-		FrameSocket.send(JSON.stringify({
-			'action': 'score',
-			'joueur': "2",
-			'points': "1",
-		}));
-	}
-};
-document.querySelector('section.reprise').onclick = function(e) {
-	if (arbitre && frame_terminee == false){
-		JouerSon("son-reprise");
-		const score_reprise_DOM = document.querySelector('#frame_reprise'); 
-		FrameSocket.send(JSON.stringify({
-			'action': 'pass',
-			'joueur': get_joueur_actif(),
-		}));
-	}
-};
-document.querySelector('#annuler_action').onclick = function(e) {
-	if (arbitre) {
-		FrameSocket.send(JSON.stringify({
-		'action': 'annuler_action',
-		}));
-	}
-};
+document.querySelector('.gauche').onclick = function(e) {action_point(1);};
+document.querySelector('.droite').onclick = function(e) {action_point(2);};
+document.querySelector('section.reprise').onclick = function(e) {action_pass();};
+document.querySelector('#annuler_action').onclick = function(e) {action_annuler()};
 document.querySelector('#echange_couleurs').onclick = function(e) {
 	document.querySelector('.joueur.gauche').classList.toggle('couleur1');
 	document.querySelector('.joueur.gauche').classList.toggle('couleur2');
@@ -258,6 +230,48 @@ document.querySelector('#conceder').onclick = function(e) {
 		}
 	}		
 }
+document.addEventListener('keyup',(e) =>{
+	if ( !modal_ouverte ){
+		if(e.key == " "){action_pass()}
+		if(e.key == "Enter"){action_point()}
+		if(e.key == "Delete"){action_annuler()}
+	}
+});
+function action_annuler(){
+	if (arbitre) {
+		FrameSocket.send(JSON.stringify({
+		'action': 'annuler_action',
+		}));
+	}
+}
+function action_point(zone = 0){
+	if (arbitre &&  frame_terminee == false) {
+		var j=-1
+		if (zone == 0){j = get_joueur_actif()}
+		if (zone == 1 && get_joueur_actif() == 1){j=1}
+		if (zone == 2 && get_joueur_actif() == 2){j=2}
+		if (j >= 0){
+			JouerSon("son-point");
+			// const score_j2_DOM = document.querySelector('#scoref_j2');
+			FrameSocket.send(JSON.stringify({
+				'action': 'score',
+				'joueur': j,
+				'points': "1",
+			}));
+		}
+	}
+}
+function action_pass(){	
+	if (arbitre && frame_terminee == false){
+		JouerSon("son-reprise");
+		// const score_reprise_DOM = document.querySelector('#frame_reprise'); 
+		FrameSocket.send(JSON.stringify({
+			'action': 'pass',
+			'joueur': get_joueur_actif(),
+		}));
+	}
+};
+	
 function chrono_frame(){
 	end = new Date()
     diff = end - debut_frame2

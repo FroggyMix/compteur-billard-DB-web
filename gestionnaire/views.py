@@ -1,5 +1,5 @@
 from django.shortcuts import render, get_object_or_404, get_list_or_404, redirect
-from django.http import HttpResponse
+from django.http import HttpResponse, Http404
 import datetime
 from django import template
 from django.conf import settings
@@ -117,7 +117,11 @@ def admin_page(request):
 	return render(request, 'gestionnaire/admin_page.html')
 
 def frame_live(request, frame_id):
-	f=Frame.objects.get(pk=frame_id)
+	try:
+		f=Frame.objects.get(pk=frame_id)
+	except Frame.DoesNotExist:
+		raise Http404("La frame demandée n'éxiste pas !")
+	# f = get_list_or_404(Frame,pk=frame_id) #Autre façon de gérer l'erreur 404
 	context = {
 		'frame_id':frame_id,
 		'frame':f,
