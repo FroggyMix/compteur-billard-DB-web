@@ -10,6 +10,7 @@ from django.db.models import Avg, Count, Min, Sum
 from django.db.models import Q
 from datetime import datetime
 import datetime
+from django.core.validators import MaxValueValidator, MinValueValidator 
 
 
 # base =  Inspectdb de la version superlight de mysqlworkbench importé dans mariadb
@@ -28,8 +29,6 @@ def construit_nom(prenom,nom,taille_max):
 		return '{p}. {n}'.format(p=prenom[:1],n=nom[:taille_max-2])
 	else:
 		return "{p} {n}".format(p=prenom.title(),n=nom.upper())
-
-
 
 class JeuVariantes(models.Model):
 	#code = models.CharField(max_length=16, unique=True)
@@ -99,10 +98,16 @@ class Match(models.Model):
 	)
 	jeu_type = models.CharField(max_length=2, choices=TYPE_JEU, verbose_name='Type de jeu', default='fr')
 	jeu_variante = models.ForeignKey(JeuVariantes,default=5, on_delete=models.PROTECT,verbose_name='Variante de jeu', db_column='Jeu_Variantes_id')	# Field name made lowercase.
-	nb_frames = models.SmallIntegerField(default=3,verbose_name='Nombre de frames',help_text='Nombre de frames maximum à jouer dans ce match')
-	fr_distance_j1 = models.SmallIntegerField(default=10,blank=True, null=True,verbose_name='Distance joueur 1',help_text='Optionnel, ne concerne que la carambole')
-	fr_distance_j2 = models.SmallIntegerField(default=10,blank=True, null=True,verbose_name='Distance joueur 2',help_text='Optionnel, ne concerne que la carambole')
-	fr_limite_nb_reprises = models.SmallIntegerField(default=10,blank=True, null=True,verbose_name='Limite du nombre de reprises',help_text='Optionnel, ne concerne que la carambole')
+	nb_frames = models.SmallIntegerField(default=3,verbose_name='Nombre de frames',help_text='Nombre de frames maximum à jouer dans ce match',
+			validators=[MaxValueValidator(100,message="Le nombre de frame doit être inférieur à 100"),MinValueValidator(1,message="Le nombre de frame doit être supérieur ou égal à 1")])
+	shot_time_limit = models.SmallIntegerField(null=True, blank=True, default=0, verbose_name='Temps max par coup (sec)',help_text='Durée maximum pour réaliser un coup (0 = pas de limite)',
+			validators=[MinValueValidator(0,message="Le temps doit être un nombre positif")])
+	fr_distance_j1 = models.SmallIntegerField(default=10,blank=True, null=True,verbose_name='Distance joueur 1',help_text='Optionnel, ne concerne que la carambole',
+			validators=[MinValueValidator(1,message="La distance doit être un nombre positif")])
+	fr_distance_j2 = models.SmallIntegerField(default=10,blank=True, null=True,verbose_name='Distance joueur 2',help_text='Optionnel, ne concerne que la carambole',
+			validators=[MinValueValidator(1,message="La distance doit être un nombre positif")])
+	fr_limite_nb_reprises = models.SmallIntegerField(default=10,blank=True, null=True,verbose_name='Limite du nombre de reprises',help_text='Optionnel, ne concerne que la carambole',
+			validators=[MinValueValidator(1,message="Le nombre de reprises doit être un nombre positif")])
 	fr_reprise_egalisatrice = models.BooleanField(default=True)	
 
 	def fullname_j1(self): #lecture

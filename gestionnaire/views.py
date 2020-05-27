@@ -34,6 +34,21 @@ def frame_liste(request):
 			f.save()
 			messages.add_message(request, messages.INFO, 'Match ajouté.')
 			return redirect('frame_liste')
+		else:
+			# f = MatchForm(request.POST)
+			# messages.add_message(request, messages.INFO, "il y'a des erreurs.")
+			#return redirect('frame_liste')#
+			framesEC=Frame.objects.frame_en_cours()
+			framesAV=Frame.objects.frame_a_venir()
+			framesRT=Frame.objects.frame_terminee()
+
+			context = {
+				'framesEC':framesEC,
+				'framesAV':framesAV,
+				'framesRT':framesRT,
+				'form': f
+			}
+			return render(request, 'gestionnaire/frame_liste.html', context)
 	# if request is GET the show unbound form to the user
 	else:
 		f = MatchForm()
@@ -48,7 +63,6 @@ def frame_liste(request):
 			'form': f
 		}
 		return render(request, 'gestionnaire/frame_liste.html', context)
-
 def match_detail(request,pk):
 	#match = Match.objects.get(pk=pk)
 	match = get_object_or_404(Match,pk=pk) #permet la gestion de l'erreur 404

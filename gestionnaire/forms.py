@@ -43,8 +43,14 @@ class JeuVariantesForm(forms.ModelForm):
 
 class MatchForm(forms.ModelForm):
 	#d_debut = forms.SplitDateTimeField(widget= widgets.AdminSplitDateTime(),label='Début du match',initial=datetime.now)
-    
 	class Meta:
 		model = Match
 		exclude = ['d_debut','d_fin','scorem_j1','scorem_j2','en_cours']
+	
+	def clean_nb_frames(self):
+		nbf = self.cleaned_data['nb_frames']
+		# if not  1 <= nbf <= 100:
+			# raise ValidationError("Le nombre de frames doit être compris entre 1 et 100")
+			#self.add_error("nb_frames", "nb incorrect")
+		return nbf
 		
