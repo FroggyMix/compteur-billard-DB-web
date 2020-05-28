@@ -33,12 +33,19 @@ def construit_nom(prenom,nom,taille_max):
 class JeuVariantes(models.Model):
 	#code = models.CharField(max_length=16, unique=True)
 	nom = models.CharField(max_length=32, unique=True)
+	TYPE_JEU = (
+		('fr', 'Carambole'),
+		('sn', 'Snooker'),
+		('po', 'Pool'),
+		('us', 'Américain')
+	)
+	jeu_type = models.CharField(max_length=2, choices=TYPE_JEU, verbose_name='Type de jeu', default='fr')
 	slug = models.SlugField(max_length=100, unique=True)
 	description = models.CharField(max_length=128, blank=True)
 	regles = models.CharField(max_length=512, blank=True, help_text='Permet de résumer les règles')
 	regles_url = models.URLField(blank=True, verbose_name='Lien vers les règles', help_text='Permet de renvoyer vers un site décrivant les règles')
 	#code = models.CharField(max_length=64, null=True, blank=True)
-
+	ordre = models.SmallIntegerField(default=1,verbose_name="Ordre d'affichage",help_text='Ordre dans lequel les variantes seront affichées')
 	class Meta:
 		db_table = 'Jeu_Variantes'
 		verbose_name_plural = "JeuVariantesModel"

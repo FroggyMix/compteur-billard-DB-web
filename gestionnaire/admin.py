@@ -44,10 +44,15 @@ class EventTypeAdmin(admin.ModelAdmin):
 	search_fields = ['nom', 'jeu_type', 'description']
 	ordering = ['nom']
 	list_filter = ['jeu_type']
+class JeuVariantesAdmin(admin.ModelAdmin):
+	list_display = ('pk','nom', 'jeu_type', 'description','ordre')
+	search_fields = ['nom', 'jeu_type', 'ordre']
+	ordering = ['jeu_type','ordre']
+	list_filter = ['jeu_type', 'ordre']
 
 
  
-admin.site.register(models.JeuVariantes)
+admin.site.register(models.JeuVariantes,JeuVariantesAdmin)
 admin.site.register(models.Match,MatchAdmin)
 admin.site.register(models.Frame,FrameAdmin)
 admin.site.register(models.Joueur, JoueurAdmin)

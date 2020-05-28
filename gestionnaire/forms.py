@@ -2,7 +2,7 @@ from django import forms
 from django.core.exceptions import ValidationError
 from .models import JeuVariantes, Joueur, Frame, Match
 from django.contrib.admin import widgets									   
-from django.contrib import admin                                    
+from django.contrib import admin									
 from datetime import datetime
  
  
@@ -46,10 +46,30 @@ class MatchForm(forms.ModelForm):
 	class Meta:
 		model = Match
 		exclude = ['d_debut','d_fin','scorem_j1','scorem_j2','en_cours']
-	
+	def __init__(self, *args, **kwargs):
+		super().__init__(*args, **kwargs)
+		#self.fields['jeu_variante'].queryset = JeuVariantes.objects.none()
+		self.fields['jeu_variante'].queryset = JeuVariantes.objects.filter(jeu_type="fr").order_by('ordre')
+		print("jeu_type",self.data.get('jeu_type'))
+		print("self.data = ",self.data)
+		print("self.instance.pk = ",self.instance.pk)
+		if 'jeu_type' in self.data:
+			print(" jeu_type in self.data")
+			try:
+				jeu_type_id = self.data.get('jeu_type')
+				#print("jeu_type_id = ",jeu_type_id)
+				self.fields['jeu_variante'].queryset = JeuVariantes.objects.filter(jeu_type=jeu_type_id).order_by('ordre')
+				print("self.fields['jeu_variante'].queryset = ",self.fields['jeu_variante'].queryset)
+			except (ValueError, TypeError):
+				pass  # invalid input from the client; ignore and fallback to empty City queryset
+		elif self.instance.pk:
+			print('else')
+			self.fields['jv'].queryset = self.instance.jeu_type.jv_set.order_by('ordre')
+			#JeuVariantes.objects.filter(self.instance.jeu_type).order_by('nom')
 	def clean_nb_frames(self):
 		nbf = self.cleaned_data['nb_frames']
-		# if not  1 <= nbf <= 100:
+		#Finalement fait dans le models ! 
+		#if not  1 <= nbf <= 100:
 			# raise ValidationError("Le nombre de frames doit être compris entre 1 et 100")
 			#self.add_error("nb_frames", "nb incorrect")
 		return nbf

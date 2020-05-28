@@ -13,6 +13,11 @@ from gestionnaire.forms import JoueurForm, MatchForm, JeuVariantesForm
 
 # Descriptions des vues
 
+def load_jv(request):
+	jeu_type = request.GET.get('jeu_type')
+	jv = JeuVariantes.objects.filter(jeu_type=jeu_type).order_by('ordre')
+	return render(request, 'gestionnaire/jv_dropdown_list_options.html', {'jv': jv})
+
 def index(request):
 	return HttpResponse("Hello Django") 
 	
@@ -140,8 +145,7 @@ def frame_live(request, frame_id):
 		'frame_id':frame_id,
 		'frame':f,
 	}
-	return render(request,'gestionnaire/frame_live.html',context)
-	
+	return render(request,'gestionnaire/frame_live.html',context)	
 	
 #debuggage pb de menudef
 def base(request):

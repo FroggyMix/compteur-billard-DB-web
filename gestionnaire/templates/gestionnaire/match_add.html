@@ -7,9 +7,12 @@
 		{% endfor %}
 	</ul>
 	{% endif %}
-    <form action="" method="post">
+    <form action="" method="post" id="matchForm" data-jv-url="{% url 'ajax_load_jv' %}" novalidate>
         {% csrf_token %}
         {{ form.as_p }}
 		<input type="submit" value="Créer le match">
     </form>
 </div>
+<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+{% load static %}
+<script src="{% static 'gestionnaire/js/forms.js' %}"></script>

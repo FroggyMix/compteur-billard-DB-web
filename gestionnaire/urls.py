@@ -38,3 +38,8 @@ urlpatterns += [
 urlpatterns += [
 	url(r'^base/$',views.base,name='base'),
 ]
+
+#Ajax service pour chargement dynamique des formulaure
+urlpatterns += [
+	path('ajax/load-jv/', views.load_jv, name='ajax_load_jv'),
+]
