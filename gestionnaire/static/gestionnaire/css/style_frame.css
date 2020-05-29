@@ -224,9 +224,9 @@ section{ /*AJOUT FLEX MEDIAQ*/
 	cursor: pointer;
 	background:transparent;
 }
-.invisible{
-	display:none !important;
-}
+/* .invisible{  MIS DANS STYLE.CSS*/
+	/* display:none !important; */
+/* } */
 
 .retracte{
 	height:0px;

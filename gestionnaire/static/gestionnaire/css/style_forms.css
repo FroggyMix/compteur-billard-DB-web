@@ -1,15 +1,21 @@
 @import 'variables.css';
+/*DEBUGGAGE*/
+/* p {border:0.2mm dashed green;} */
+/* div {border:0.2mm dashed red;} */
+/* li {border:0.2mm dashed gold;} */
+/* ul{border:0.2mm dashed hotpink;} */
 .formulaire{
 /*   margin: 10px auto; */
-  padding: 10px 20px;
+  padding: 0px 20px;
   background: var(--formulaire-background);
   border-radius: 8px;
   max-width: 480px;
   min-width: 300px;
-  margin-top:15px;
+  margin-top:5px;
 }
 .formulaire h4{
-	line-height:2em;
+	/* line-height:2em; */
+	margin: .1em;
 	font-size:2em;
 	color:var(--formulaire-titre-color);
 	font-weight:var(--formulaire-titre-weight);
@@ -17,13 +23,13 @@
 }
 .formulaire label, p.datetime {
   display: block;
-  margin-bottom: 8px;
+  /* margin-bottom: 4px; */
   /* font-family: 'Nunito', sans-serif; */
   color: var(--formulaire-label-color);
   font-weight:normal;
   line-height: var(--formulaire-label-size);
   font-size:var(--formulaire-label-size);
-  margin-top: 20px;
+  /* margin-top: 20px; */
 }
 p.datetime {
   font-weight:lighter;
@@ -48,9 +54,10 @@ p.datetime {
   border-radius: 5px;
   font-size: var(--formulaire-saisie-size);
   height: auto;
-  margin: 5px;
+  /* margin: 5px; */
   outline: 0;
-  padding: 10px;
+  margin:0;
+  padding: 6px;
   width: 100%;
   background-color: var(--formulaire-saisie-bkg);
   color: var(--formulaire-saisie-color);
@@ -64,11 +71,11 @@ p.datetime {
 
 .formulaire input[type="radio"],
 .formulaire input[type="checkbox"] {
-  margin: 0 4px 8px 0;
+  margin: 8px;/*0 4px 8px 0;*/
+  transform: scale(1.5);
 }
 
 .formulaire select {
-  padding: 6px;
   height: calc(var(--formulaire-saisie-size)*1.7);
   border-radius: 2px;
 }
@@ -90,20 +97,23 @@ p.datetime {
   /* margin-top:20px; */
 }
 .formulaire input[type=button] {
-
   color: var(--formulaire-bouton-color);
   background-color:var(--formulaire-bouton-bkg-color);
 }
 .formulaire input[type="submit"]:hover,.formulaire input[type=button]:hover {
   /* font-size: 2.0em; */
 background:#0D8F11;}
-   
+
+.formulaire span{display:block;}   
 .formulaire .helptext{
 	font-style:italic;
 	font-size:0.8em;
 	text-align:right;
 }
-	
+ul.errorlist, ul.errorlist li {
+	margin:0;
+	padding:0;
+}
 @media screen and (max-width: 750px) {
   .formulaire{width:100%;}
 }
