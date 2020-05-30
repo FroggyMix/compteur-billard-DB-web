@@ -1,3 +1,7 @@
+//PARAMETRES
+var TTS_OK=false // pour saisir la valeur patrr défaut du TTS (activé ou desactivé
+
+//DECLARATION des CONSTANTES et VARIABLES
 const frameId = JSON.parse(document.getElementById('frame-id').textContent);
 const FrameSocket = new WebSocket(
 	'ws://'
@@ -28,7 +32,6 @@ if (arbitre){//affichage des outils dans le menu
 }
 
 //Gestion du TTS (forcer la valeur par défaut ci-dessous)
-var TTS_OK=false // pour activer/desactiver le TTS
 btn_TTS=document.querySelector('#toggle-TTS')
 txt_TTS=document.querySelector('#label-TTS')
 btn_TTS.classList.remove('fa-toggle-on','fa-toggle-off');
