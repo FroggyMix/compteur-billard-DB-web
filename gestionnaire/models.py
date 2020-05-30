@@ -103,7 +103,7 @@ class Match(models.Model):
 		('po', 'Pool'),
 		('us', 'Américain')
 	)
-	jeu_type = models.CharField(max_length=2, choices=TYPE_JEU, verbose_name='Type de jeu', default='fr')
+	jeu_type = models.CharField(max_length=2, choices=TYPE_JEU, verbose_name='Type de jeu', default='sn')
 	jeu_variante = models.ForeignKey(JeuVariantes,default=5, on_delete=models.PROTECT,verbose_name='Variante de jeu', db_column='Jeu_Variantes_id')	# Field name made lowercase.
 	nb_frames = models.SmallIntegerField(default=3,verbose_name='Nombre de frames',help_text='Nombre de frames maximum à jouer dans ce match',
 			validators=[MaxValueValidator(100,message="Le nombre de frame doit être inférieur à 100"),MinValueValidator(1,message="Le nombre de frame doit être supérieur ou égal à 1")])
