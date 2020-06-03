@@ -427,13 +427,13 @@ class Frame(models.Model):
 			temp = self.match.match_termine()	
 			#print ('Le joueur {} a passé la main.'.format(joueur))
 		elif evt == "toss-engage":
-			Frame.objects.get(pk=self.frame_id).debutef()
-			Frame.objects.get(pk=self.frame_id).match.debutem()
+			self.debutef()
+			self.match.debutem()
 		elif evt == "engage": self.debutef()
 		elif evt == "concede":
 			temp = self.frame_terminee()
 			temp = self.match.match_termine()
-		elif evt == "correction":
+		elif evt == "correction": pass
 		elif evt == "annuler-action": pass# aucun evt ajouté pour l'instant (cf. frame.undo_last_event()
 		
 	def debutef(self): #ECRITURE
