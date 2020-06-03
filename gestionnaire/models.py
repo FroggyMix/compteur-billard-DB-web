@@ -418,8 +418,34 @@ class Frame(models.Model):
 		FrameEvent.objects.create(event_type=EventType.objects.get(nom='correction'),frame=self,crediteur=crediteur,points=montant)	
 	def ajoute_evt(self,evt,crediteur=0,points=""): #ECRITURE
 		temp=FrameEvent.objects.insere_evt(self,evt,crediteur,points)
+		# on declenche les traitements necessaires selon le type d'evt
+		if  evt == "score": pass
+		elif evt == "pass":
+			#On lance les traitements de reprise egalisatrice, de fin de frame et de match
+			temp = self.reprise_egalisatrice_detecte()
+			temp = self.frame_terminee()
+			temp = self.match.match_termine()	
+			#print ('Le joueur {} a passé la main.'.format(joueur))
+		elif evt == "toss-engage":
+			Frame.objects.get(pk=self.frame_id).debutef()
+			Frame.objects.get(pk=self.frame_id).match.debutem()
+		elif evt == "engage": self.debutef()
+		elif evt == "concede":
+			temp = self.frame_terminee()
+			temp = self.match.match_termine()
+		elif evt == "correction":
+		elif evt == "annuler-action": pass# aucun evt ajouté pour l'instant (cf. frame.undo_last_event()
+		
 	def debutef(self): #ECRITURE
 		if not self.d_debut : Frame.objects.filter(pk=self.pk).update(d_debut=timezone.localtime(timezone.now()))
+	def restart_shot_timer(self): #LECTURE
+		dernier_evt = FrameEvent.objects.filter(frame=self).order_by('-d_horodatage').first()
+		dernier_evt_nom = FrameEvent.objects.filter(frame=self).order_by('-d_horodatage').values_list('event_type__nom',flat=True).first()
+		if self.match.shot_time_limit >0 and (dernier_evt_nom == 'pass' or dernier_evt_nom == 'score'):
+			print(dernier_evt.d_horodatage.strftime("%Y/%m/%d %H:%M:%S") )
+			return dernier_evt.d_horodatage.strftime("%Y/%m/%d %H:%M:%S") 
+		else:
+			return 0
 ###########  E V E N T   T Y P E #############
 class EventType(models.Model):
 	nom = models.CharField(max_length=32, unique=True)

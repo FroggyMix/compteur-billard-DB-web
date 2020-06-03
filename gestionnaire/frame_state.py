@@ -24,7 +24,8 @@ def frame_states(frame_id):
 		"joueur_commence":fr.debutant(),
 		# "reprise_egalisatrice":fr.reprise_egalisatrice_now(),
 		"reprise_egalisatrice":fr.reprise_egalisatrice(),
-		"vainqueurf":fr.vainqueurf(),		
+		"vainqueurf":fr.vainqueurf(),
+		"restart_shot_timer":fr.restart_shot_timer(),
 		}
 	return(etat_json)
 

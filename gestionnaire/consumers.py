@@ -62,17 +62,23 @@ class FrameConsumer_sync(WebsocketConsumer):
 			#FrameEvent.objects.create(event_type=EventType.objects.get(nom='pass'),frame=Frame.objects.get(pk=self.frame_id),crediteur=joueur)
 			Frame.objects.get(pk=self.frame_id).ajoute_evt('pass',text_data_json['joueur'])
 			
+			# CODE REPORTE DANS MODELS.PY
 			#On lance les traitements de reprise egalisatrice, de fin de frame et de match
-			temp = Frame.objects.get(pk=self.frame_id).reprise_egalisatrice_detecte()
-			temp = Frame.objects.get(pk=self.frame_id).frame_terminee()
-			temp = Frame.objects.get(pk=self.frame_id).match.match_termine()	
+			# temp = Frame.objects.get(pk=self.frame_id).reprise_egalisatrice_detecte()
+			# temp = Frame.objects.get(pk=self.frame_id).frame_terminee()
+			# temp = Frame.objects.get(pk=self.frame_id).match.match_termine()	
 			#print ('Le joueur {} a passé la main.'.format(joueur))
+			# FIN - CODE REPORTE DANS MODELS.PY
 			
 		if text_data_json['action'] == 'toss':
 			#Le toss a décidé du joueur qui commence : on le log dans les evt et date le debut de la frame (voire du match)
 			Frame.objects.get(pk=self.frame_id).ajoute_evt('toss-engage',text_data_json['joueur'])
-			Frame.objects.get(pk=self.frame_id).debutef()
-			Frame.objects.get(pk=self.frame_id).match.debutem()
+			
+			# CODE REPORTE DANS MODELS.PY
+			# Frame.objects.get(pk=self.frame_id).debutef()
+			# Frame.objects.get(pk=self.frame_id).match.debutem()
+			# FIN - CODE REPORTE DANS MODELS.PY
+			
 			# joueur=text_data_json['joueur']
 			#FrameEvent.objects.create(event_type=EventType.objects.get(nom='toss-engage'),frame=Frame.objects.get(pk=self.frame_id),crediteur=joueur)			
 			#Frame.objects.filter(pk=self.frame_id).update(d_debut=timezone.localtime(timezone.now()))
@@ -83,7 +89,11 @@ class FrameConsumer_sync(WebsocketConsumer):
 		if text_data_json['action'] == 'start':
 			#dans le cas où frame.num>1 le joueur vient d'engager
 			Frame.objects.get(pk=self.frame_id).ajoute_evt('engage',text_data_json['joueur'])
-			Frame.objects.get(pk=self.frame_id).debutef()
+			
+			# CODE REPORTE DANS MODELS.PY
+			# Frame.objects.get(pk=self.frame_id).debutef()
+			# FIN - CODE REPORTE DANS MODELS.PY
+			
 			# joueur=text_data_json['joueur']
 			# FrameEvent.objects.create(event_type=EventType.objects.get(nom='engage'),frame=Frame.objects.get(pk=self.frame_id),crediteur=joueur)
 			# Frame.objects.filter(pk=self.frame_id).update(d_debut=timezone.localtime(timezone.now()))
@@ -102,8 +112,12 @@ class FrameConsumer_sync(WebsocketConsumer):
 			# FrameEvent.objects.create(event_type=EventType.objects.get(nom='concedeF'),frame=Frame.objects.get(pk=self.frame_id),crediteur=joueur)
 			# FrameEvent.objects.create(event_type=EventType.objects.get(nom='victoire-frame'),frame=Frame.objects.get(pk=self.frame_id),crediteur=3-joueur)		
 			#On lance les traitements de reprise egalisatrice, de fin de frame et de match
-			temp = Frame.objects.get(pk=self.frame_id).frame_terminee()
-			temp = Frame.objects.get(pk=self.frame_id).match.match_termine()
+			
+			# CODE REPORTE DANS MODELS.PY
+			# temp = Frame.objects.get(pk=self.frame_id).frame_terminee()
+			# temp = Frame.objects.get(pk=self.frame_id).match.match_termine()
+			# FIN - CODE REPORTE DANS MODELS.PY
+			
 			#print ('Le joueur {} a concédé la frame.'.format(joueur))
 		
 		if text_data_json['action'] == 'redirect':

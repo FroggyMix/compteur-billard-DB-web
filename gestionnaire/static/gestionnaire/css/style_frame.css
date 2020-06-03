@@ -160,6 +160,10 @@ section{ /*AJOUT FLEX MEDIAQ*/
   margin:2px;*/
 }
 
+.timeout {
+	color:red;
+}
+
 .joueur,.reprise {
   display: flex; /* IE fix */
   flex: 1; /* occupe la largeur restante */

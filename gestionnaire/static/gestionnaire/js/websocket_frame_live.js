@@ -3,6 +3,8 @@ var TTS_OK=false // pour saisir la valeur patrr défaut du TTS (activé ou desac
 
 //DECLARATION des CONSTANTES et VARIABLES
 const frameId = JSON.parse(document.getElementById('frame-id').textContent);
+const shot_time_limit = JSON.parse(document.getElementById('shot_time_limit').textContent);
+
 const FrameSocket = new WebSocket(
 	'ws://'
 	+ window.location.host
@@ -25,7 +27,8 @@ if (window.location.port){racine_site=racine_site+":"+window.location.port}
 var modal_url_OK=""
 var modal_url_Cancel=racine_site //"http://192.168.1.28:8000/"
 var modal_ouverte = false // permet de savoir is une modale est en cours 
-
+var start; //utilisé pour l'heure de début du countdown
+// var stop_countdown=false;
 if (arbitre){//affichage des outils dans le menu
 	document.querySelector('.green').classList.remove('invisible')
 	document.querySelector('.yellow').classList.remove('invisible')
@@ -81,7 +84,11 @@ FrameSocket.onmessage = function(e) {
 		var break_j = (data.message.break);
 		
 		if (joueur_actif != "0"){force_joueur_actif(joueur_actif,break_j);}
-		
+		//Gestion du compte à rebour de temps de jeu
+		if (data.message.restart_shot_timer !=0){
+			start = Date.parse(data.message.restart_shot_timer+ " GMT");
+			countdown(shot_time_limit,document.querySelector('#shot_timer'));
+		}
 		//Gestion du chrono de frame : TODO optimisable? en ne relançant pas le chronoo à cchaque arrivée de ws ?
 		const hui=new Date();
 		var debut_frame=(data.message.dureef);
@@ -273,8 +280,7 @@ function action_pass(){
 			'joueur': get_joueur_actif(),
 		}));
 	}
-};
-	
+};	
 function chrono_frame(){
 	end = new Date()
     diff = end - debut_frame2
@@ -362,4 +368,30 @@ function affiche_message_live(text){
 		document.querySelector('#message_live').classList.remove('deroule')
 		document.querySelector('#message_live').classList.add('retracte')
 	},10000);
+}
+function countdown(duration, cible) {
+	var diff,
+	minutes,
+	seconds;
+	cible.classList.remove('timeout')
+    timer();
+    function timer() {
+        // get the number of seconds that have elapsed since 
+        // startTimer() was called
+        diff = duration - (((Date.now() - start) / 1000) | 0);
+        minutes = (diff / 60) | 0;
+        seconds = (diff % 60) | 0;
+        minutes = minutes < 10 ? "0" + minutes : minutes;
+        seconds = seconds < 10 ? "0" + seconds : seconds;
+        cible.textContent = minutes + ":" + seconds; 
+        if (diff <= duration/10) {
+        	cible.classList.add('timeout')
+        }
+		if (diff <= 0) {
+        	cible.classList.add('timeout')
+        }
+        else{
+        	setTimeout(timer,1000);
+        }
+    }
 }
