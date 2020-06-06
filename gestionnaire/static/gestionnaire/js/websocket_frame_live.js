@@ -34,30 +34,49 @@ if (arbitre){//affichage des outils dans le menu
 	document.querySelector('.yellow').classList.remove('invisible')
 }
 
-//Gestion du TTS (forcer la valeur par défaut ci-dessous)
-btn_TTS=document.querySelector('#toggle-TTS')
-txt_TTS=document.querySelector('#label-TTS')
-btn_TTS.classList.remove('fa-toggle-on','fa-toggle-off');
-if (TTS_OK){
-	btn_TTS.classList.add('fa-toggle-on');
-	txt_TTS.textContent="Désactiver le TTS";
-}
-else{
-	btn_TTS.classList.add('fa-toggle-off');
-	txt_TTS.textContent="Activer le TTS";
-}
-btn_TTS.addEventListener('click', () => {
-	if (btn_TTS.classList.contains('fa-toggle-on')){
-		TTS_OK=false;
-		txt_TTS.textContent="Activer le TTS";
+//Gestion du TTS (forcer la valeur par défaut ci-dessous). Ne concerne que l'arbitre
+if (arbitre){
+	btn_TTS=document.querySelector('#toggle-TTS')
+	txt_TTS=document.querySelector('#label-TTS')
+	btn_TTS.classList.remove('fa-toggle-on','fa-toggle-off');
+	if (TTS_OK){
+		btn_TTS.classList.add('fa-toggle-on');
+		txt_TTS.textContent="Désactiver le TTS";
 	}
 	else{
-		TTS_OK=true;
-		txt_TTS.textContent="Désactiver le TTS";		
+		btn_TTS.classList.add('fa-toggle-off');
+		txt_TTS.textContent="Activer le TTS";
 	}
-	btn_TTS.classList.toggle('fa-toggle-off');
-	btn_TTS.classList.toggle('fa-toggle-on');
-});
+	btn_TTS.addEventListener('click', () => {
+		if (btn_TTS.classList.contains('fa-toggle-on')){
+			TTS_OK=false;
+			txt_TTS.textContent="Activer le TTS";
+		}
+		else{
+			TTS_OK=true;
+			txt_TTS.textContent="Désactiver le TTS";		
+		}
+		btn_TTS.classList.toggle('fa-toggle-off');
+		btn_TTS.classList.toggle('fa-toggle-on');
+	});
+}
+// Gestion du bouton PAUSE
+if (arbitre){
+	btn_PAUSE=document.getElementById('btn-pause')
+	txt_PAUSE=document.getElementById('label-pause')
+	btn_PAUSE.addEventListener('click', () => {
+		btn_PAUSE.classList.toggle('fa-pause');
+		btn_PAUSE.classList.toggle('fa-play');
+		if (btn_PAUSE.classList.contains('fa-pause')){
+			txt_PAUSE.textContent="Mettre le jeu en pause";
+			chrono_play()
+		}
+		else{
+			txt_PAUSE.textContent="Relancer le jeu";
+			chrono_pause()			
+		}
+	});
+}
 
 FrameSocket.onmessage = function(e) {
 	const data = JSON.parse(e.data);	
@@ -254,6 +273,20 @@ function action_annuler(){
 		}));
 	}
 }
+function chrono_pause(){
+	if (arbitre) {
+		FrameSocket.send(JSON.stringify({
+		'action': 'chrono-pause',
+		}));
+	}
+}
+function chrono_play(){
+	if (arbitre) {
+		FrameSocket.send(JSON.stringify({
+		'action': 'chrono-play',
+		}));
+	}
+}
 function action_point(zone = 0){
 	if (arbitre &&  frame_terminee == false) {
 		var j=-1
@@ -388,7 +421,8 @@ function countdown(duration, cible) {
         	cible.classList.add('timeout')
         }
 		if (diff <= 0) {
-        	cible.classList.add('timeout')
+        	cible.classList.add('timeout');
+			cible.textContent = "00:00";
         }
         else{
         	setTimeout(timer,1000);

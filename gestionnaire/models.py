@@ -11,24 +11,26 @@ from django.db.models import Q
 from datetime import datetime
 import datetime
 from django.core.validators import MaxValueValidator, MinValueValidator 
+import threading #pour le timer de shot_time
+# from threading import timer
+from asgiref.sync import async_to_sync #pour pouvoir envoyer ws
+from channels.layers import get_channel_layer #pour pouvoir envoyer ws
 
 
-# base =  Inspectdb de la version superlight de mysqlworkbench importé dans mariadb
-# Retouche en fonction des tuto et doc Django
+# base =  Inspectdb de la version superlight de mysqlworkbench importé dans mariadb + Retouche en fonction des tuto et doc Django
 
-# This is an auto-generated Django model module.
-# You'll have to do the following manually to clean this up:
-#	* Rearrange models' order
-#	* Make sure each model has one field with primary_key=True
-#	* Make sure each ForeignKey and OneToOneField has `on_delete` set to the desired behavior
-#	* Remove `managed = True` lines if you wish to allow Django to create, modify, and delete the table
-# Feel free to rename the models, but don't rename db_table values or field names.
+global dict_timer
+dict_timer={"zero":0}
+
 
 def construit_nom(prenom,nom,taille_max):
 	if len(nom) + len(prenom) > taille_max:
 		return '{p}. {n}'.format(p=prenom[:1],n=nom[:taille_max-2])
 	else:
 		return "{p} {n}".format(p=prenom.title(),n=nom.upper())
+		
+
+	
 
 class JeuVariantes(models.Model):
 	#code = models.CharField(max_length=16, unique=True)
@@ -419,13 +421,15 @@ class Frame(models.Model):
 	def ajoute_evt(self,evt,crediteur=0,points=""): #ECRITURE
 		temp=FrameEvent.objects.insere_evt(self,evt,crediteur,points)
 		# on declenche les traitements necessaires selon le type d'evt
-		if  evt == "score": pass
+		if  evt == "score": 
+			self.lance_countdown_shot_time()
 		elif evt == "pass":
 			#On lance les traitements de reprise egalisatrice, de fin de frame et de match
 			temp = self.reprise_egalisatrice_detecte()
 			temp = self.frame_terminee()
 			temp = self.match.match_termine()	
 			#print ('Le joueur {} a passé la main.'.format(joueur))
+			self.lance_countdown_shot_time()
 		elif evt == "toss-engage":
 			self.debutef()
 			self.match.debutem()
@@ -434,18 +438,63 @@ class Frame(models.Model):
 			temp = self.frame_terminee()
 			temp = self.match.match_termine()
 		elif evt == "correction": pass
-		elif evt == "annuler-action": pass# aucun evt ajouté pour l'instant (cf. frame.undo_last_event()
-		
+		elif evt == "faute-timeout": pass
+		elif evt == "annuler-action": pass# aucun evt ajouté pour l'instant (cf. frame.undo_last_event()		
 	def debutef(self): #ECRITURE
 		if not self.d_debut : Frame.objects.filter(pk=self.pk).update(d_debut=timezone.localtime(timezone.now()))
 	def restart_shot_timer(self): #LECTURE
 		dernier_evt = FrameEvent.objects.filter(frame=self).order_by('-d_horodatage').first()
 		dernier_evt_nom = FrameEvent.objects.filter(frame=self).order_by('-d_horodatage').values_list('event_type__nom',flat=True).first()
-		if self.match.shot_time_limit >0 and (dernier_evt_nom == 'pass' or dernier_evt_nom == 'score'):
+		if self.match.shot_time_limit >0 and not self.reprise_egalisatrice() == "maintenant" and self.vainqueurf() == -1 and dernier_evt_nom in ['pass','score','dernier-coup']:
 			print(dernier_evt.d_horodatage.strftime("%Y/%m/%d %H:%M:%S") )
 			return dernier_evt.d_horodatage.strftime("%Y/%m/%d %H:%M:%S") 
 		else:
 			return 0
+	def timeout_shot_time(self):
+		# logique de traitement du timeout :
+		self.ajoute_evt('faute-timeout',self.joueur_actif())		
+		self.ajoute_evt('pass',self.joueur_actif())		
+		# message websocket 		
+		channel_layer = get_channel_layer()
+		frame_group_name = 'frame_%s' %self.pk
+		async_to_sync(channel_layer.group_send)(frame_group_name,{'type': 'score_message','message':self.frame_states()})
+	def lance_countdown_shot_time(self):
+		try :
+			if dict_timer[self.pk] :
+				dict_timer[self.pk].cancel()
+				dict_timer.pop(self.pk)
+		except : pass
+		if self.match.shot_time_limit > 0:
+			if self.restart_shot_timer() != 0: 
+				t=threading.Timer(self.match.shot_time_limit+2, self.timeout_shot_time) #Rajout de 2sec au temps limite pour laisser le temps de voir le 00:00 et absorber l'imprecision des timers
+				t.start()
+				dict_timer[self.pk]= t
+	def frame_states(self):
+		fr=self
+		etat_json = {
+			"match":{
+				"dureeM":fr.match.dureem_reelle(),
+				"vainqueurm":fr.match.vainqueurm(),
+				"score_match":fr.match.score_match_dans_framelive(), #On envoie qd mm cette info car à la fin de la dernière frame il faut prendre en compte le changement de score
+				},
+			"numf":fr.num,
+			"nextf":fr.next_frame_existe(),
+			"dureef":fr.dureef(),
+			"scoref_j1":fr.scoref_j1(),
+			"moyenne_j1":fr.moyennef_j1(),
+			"scoref_j2":fr.scoref_j2(),
+			"moyenne_j2":fr.moyennef_j2(),		
+			"reprise":fr.reprise(),
+			"joueur_actif":fr.joueur_actif(),
+			"break":fr.break_en_cours(),
+			"joueur_commence":fr.debutant(),
+			# "reprise_egalisatrice":fr.reprise_egalisatrice_now(),
+			"reprise_egalisatrice":fr.reprise_egalisatrice(),
+			"vainqueurf":fr.vainqueurf(),
+			"restart_shot_timer":fr.restart_shot_timer(),
+			}
+		return(etat_json)
+
 ###########  E V E N T   T Y P E #############
 class EventType(models.Model):
 	nom = models.CharField(max_length=32, unique=True)
