@@ -14,8 +14,8 @@
 {% block content %}  
 {{ frame_id|json_script:"frame-id" }} 
 {{ frame.match.shot_time_limit|json_script:"shot_time_limit" }} 
- <div id="sombre"></div>  <!-- Peut servir pour assombrir la page qd on entre dans les menus-->
-	{% block header %}
+ <div id="sombre">=</div>  <!-- Peut servir pour assombrir la page qd on entre dans les menus-->
+	<!-- {% block header %} -->
 		{% include "gestionnaire/menu.html" with active="jouer"%}
 	{% endblock %}
 	
@@ -32,9 +32,10 @@
 								<!-- <img class="tools" id="annuler_action" src="/media/images/undo_blanc.png" height='50'> -->
 							<!-- </div>Annuler le dernier coup -->
 							<h2> Actions rapides</h2>
-							{% if frame.match.shot_time_limit > 0 %}<div><button class="fa fa-pause" id="btn-pause"></button> <span id="label-pause">Mettre le jeu en pause</span></div>{% endif %}
+							<!-- {% if frame.match.shot_time_limit > 0 %}<div><button class="fa fa-pause" id="btn-pause"></button> <span id="label-pause">Mettre le jeu en pause</span></div>{% endif %} -->
+							<div><button class="fa fa-pause" id="btn-pause"></button> <span id="label-pause">Mettre le jeu en pause</span></div>
 							<div><button class="fa fa-undo" id="annuler_action"></button> <span>Annuler la dernière action</span></div>
-							<div><button class="fa fa-sign-out" id="conceder">1</button><span>Le joueur actif concède</span></div> 
+							<div><button class="fa fa-sign-out" id="conceder"></button><span>Le joueur actif concède</span></div> 
 							<!-- <div><button class="fa fa-sign-out" id="concedeJ2">2</button><span>Joueur2 concède</span></div>  -->
 							<div><button class="fa fa-exchange" id="echange_couleurs"></button><span>Echanger la couleur des billes</span></div> 
 							<div><button class="fa fa-toggle-on" id="toggle-TTS"></button><span id="label-TTS"></span></div> 
@@ -67,6 +68,8 @@
 
 	<audio autoplay="false" id="son-reprise" src="/media/sound/woosh4_court.mp3"></audio>
 	<audio autoplay="false" id="son-point" src="/media/sound/message_court.mp3"></audio>
+	<audio autoplay="false" id="son-buzzer" src="/media/sound/buzzer2.mp3"></audio>
+	<audio autoplay="false" id="son-tictac" src="/media/sound/tictac1-1sec.mp3"></audio>
 	
 	<div id="message_live" class="retracte"></div>
 	

@@ -15,6 +15,7 @@ import threading #pour le timer de shot_time
 # from threading import timer
 from asgiref.sync import async_to_sync #pour pouvoir envoyer ws
 from channels.layers import get_channel_layer #pour pouvoir envoyer ws
+import pytz #pour redre les datetime aware
 
 
 # base =  Inspectdb de la version superlight de mysqlworkbench importé dans mariadb + Retouche en fonction des tuto et doc Django
@@ -135,10 +136,15 @@ class Match(models.Model):
 		return FrameEvent.objects.filter(frame__in=Frame.objects.filter(match=self)).filter(crediteur=1, event_type__nom='victoire-frame').count()
 	def scorem_j2(self): #lecture
 		return FrameEvent.objects.filter(frame__in=Frame.objects.filter(match=self)).filter(crediteur=2, event_type__nom='victoire-frame').count()
+	def dureem_reelle_en_sec(self): #lecture
+		dureeM=0
+		for f in Frame.objects.filter(match=self):
+			if f.dureef_reelle_en_secondes() : dureeM = dureeM + f.dureef_reelle_en_secondes()
+		return dureeM
 	def dureem_reelle(self): #lecture
 		dureeM=0
 		for f in Frame.objects.filter(match=self):
-			dureeM = dureeM + f.dureef_reelle_en_secondes()
+			if f.dureef_reelle_en_secondes() : dureeM = dureeM + f.dureef_reelle_en_secondes()
 		str_duree=str(datetime.timedelta(seconds=dureeM))
 		str_duree=str_duree.split(":")
 		for i in range(3):
@@ -243,13 +249,42 @@ class Frame(models.Model):
 		breakj = self.break_en_cours() if self.joueur_actif()==2 else 0		
 		return round((self.scoref_j2() - breakj) / nb_pass,3) if nb_pass > 0 else 0
 	def dureef_reelle_en_secondes(self):  #lecture
+		#print("Fonction dureef_reelle_en_sec")
 		if self.d_debut:
+			# d_ref = datetime.datetime(2020,1,1,0,0,0,0,pytz.UTC) #date de reference pour les calculs de datetime que la DB de test ne sait pas faire
+			d_ref = self.d_debut
+			debuts = FrameEvent.objects.filter(frame=self,event_type__nom="chrono-pause")#.aggregate(Sum("d_horodatage"))
+			# debuts_sec = (debuts - dref).total_seconds()
+			somme_debuts_sec = 0
+			if debuts.count() > 0 :
+				for ev in debuts :
+					#print(ev.d_horodatage)
+					somme_debuts_sec += (ev.d_horodatage- d_ref).total_seconds()
+			fins = FrameEvent.objects.filter(frame=self,event_type__nom="chrono-play")#.aggregate(Sum("d_horodatage"))
+			somme_fins_sec = 0
+			if fins.count() > 0 :
+				for ev in fins :
+					somme_fins_sec += (ev.d_horodatage - d_ref).total_seconds()
+				
+			diff_sec = somme_debuts_sec - somme_fins_sec
+			#print("ref = {} ;debuts = {} ; fins = {} ; diff = {}".format(d_ref,somme_debuts_sec, somme_fins_sec, diff_sec))
+			
 			if self.d_fin:
-				return round((self.d_fin - self.d_debut).total_seconds(),0)
-			else:
-				return round((timezone.localtime(timezone.now()) - self.d_debut).total_seconds(),0)				
-		else:
-			return 0	
+				hfin_sec = (self.d_fin - d_ref).total_seconds() 
+			elif diff_sec > 0 :
+				hfin_sec = 0
+			else : 
+				hfin_sec = (timezone.localtime(timezone.now())- d_ref).total_seconds()
+			hdeb_sec = (self.d_debut - d_ref).total_seconds()
+			print("[{}] hfin({}) - hdeb({}) + diff_sec({}) ==== DUREE_FRAME({})".format(timezone.localtime(timezone.now()),hfin_sec, hdeb_sec, diff_sec,round(hfin_sec - hdeb_sec + diff_sec,0)))
+			return round(hfin_sec - hdeb_sec + diff_sec,0)
+		# if self.d_debut:
+			# if self.d_fin:	
+				# return round((self.d_fin - self.d_debut).total_seconds() - self.temps_de_pause(),0)
+			# else:
+				# return round((timezone.localtime(timezone.now()) - self.d_debut).total_seconds() - self.temps_de_pause(),0)				
+		# else:
+			# return 0	
 	def break_en_cours(self): #lecture
 		## Est la somme des points marqués depuis le dernier changement de joueur(pass)
 		liste_derniers_pass = FrameEvent.objects.filter(frame=self,event_type__nom='pass').order_by('-d_horodatage')
@@ -369,7 +404,7 @@ class Frame(models.Model):
 					if self.scoref_j1() >= dist1 and self.scoref_j2() < dist2: 
 						joueur_vainqueur=1
 					elif self.scoref_j1() < dist1 and self.scoref_j2() >= dist2: 
-						joueur_vainqueur=2
+						joueur_vainqueur = 2
 					else: 
 						# On compare les moyennes
 						print('comparaison des moyennes')
@@ -398,7 +433,6 @@ class Frame(models.Model):
 		if dernier_evt == "dernier-coup":
 			return "prochain"		
 	def dureef(self): #lecture
-		#### Cette fonction a été changée pour renvoyer unde durée : il faut changer son nom ainsi que dans frame_state qui l'appelle
 		if self.d_debut:
 			return str(datetime.timedelta(seconds=self.dureef_reelle_en_secondes()))
 		else: return "00:00:00"		
@@ -422,35 +456,39 @@ class Frame(models.Model):
 		temp=FrameEvent.objects.insere_evt(self,evt,crediteur,points)
 		# on declenche les traitements necessaires selon le type d'evt
 		if  evt == "score": 
-			self.lance_countdown_shot_time()
+			self.shot_timer_restart()
 		elif evt == "pass":
 			#On lance les traitements de reprise egalisatrice, de fin de frame et de match
 			temp = self.reprise_egalisatrice_detecte()
 			temp = self.frame_terminee()
 			temp = self.match.match_termine()	
 			#print ('Le joueur {} a passé la main.'.format(joueur))
-			self.lance_countdown_shot_time()
+			self.shot_timer_restart()
 		elif evt == "toss-engage":
 			self.debutef()
 			self.match.debutem()
 		elif evt == "engage": self.debutef()
-		elif evt == "concede":
+		elif evt == "concedeF":
 			temp = self.frame_terminee()
 			temp = self.match.match_termine()
 		elif evt == "correction": pass
 		elif evt == "faute-timeout": pass
 		elif evt == "annuler-action": pass# aucun evt ajouté pour l'instant (cf. frame.undo_last_event()		
+		elif evt == "chrono-pause": 
+			print(">>>>>>>>>>><<<<<<<<<<<<EVT CHRONO-PAUSE ><<<<<>><")
+			self.shot_timer_stop()
+		elif evt == "chrono-play": self.shot_timer_start()
 	def debutef(self): #ECRITURE
 		if not self.d_debut : Frame.objects.filter(pk=self.pk).update(d_debut=timezone.localtime(timezone.now()))
-	def restart_shot_timer(self): #LECTURE
+	def shot_timer_a_relancer_depuis(self): #LECTURE
 		dernier_evt = FrameEvent.objects.filter(frame=self).order_by('-d_horodatage').first()
 		dernier_evt_nom = FrameEvent.objects.filter(frame=self).order_by('-d_horodatage').values_list('event_type__nom',flat=True).first()
-		if self.match.shot_time_limit >0 and not self.reprise_egalisatrice() == "maintenant" and self.vainqueurf() == -1 and dernier_evt_nom in ['pass','score','dernier-coup']:
-			print(dernier_evt.d_horodatage.strftime("%Y/%m/%d %H:%M:%S") )
+		if self.match.shot_time_limit >0 and not self.reprise_egalisatrice() == "maintenant" and self.vainqueurf() == -1 and dernier_evt_nom in ['pass','score','dernier-coup','chrono-play']:
+			# print(dernier_evt.d_horodatage.strftime("%Y/%m/%d %H:%M:%S") )
 			return dernier_evt.d_horodatage.strftime("%Y/%m/%d %H:%M:%S") 
 		else:
 			return 0
-	def timeout_shot_time(self):
+	def shot_timer_timed_out(self):
 		# logique de traitement du timeout :
 		self.ajoute_evt('faute-timeout',self.joueur_actif())		
 		self.ajoute_evt('pass',self.joueur_actif())		
@@ -458,28 +496,49 @@ class Frame(models.Model):
 		channel_layer = get_channel_layer()
 		frame_group_name = 'frame_%s' %self.pk
 		async_to_sync(channel_layer.group_send)(frame_group_name,{'type': 'score_message','message':self.frame_states()})
-	def lance_countdown_shot_time(self):
+	def shot_timer_stop(self) :
+		print("Tentative d'arrêt du timer ",self.pk)
 		try :
 			if dict_timer[self.pk] :
 				dict_timer[self.pk].cancel()
 				dict_timer.pop(self.pk)
-		except : pass
+			print("==> Réussite")
+		except : print("==> Echec")
+		print("[{}]>>>structure timers (arret): {} ".format(timezone.localtime(timezone.now()),dict_timer))
+	def shot_timer_start(self):
+		print("Démarrage du timer",self.pk)
+		self.shot_timer_stop()
 		if self.match.shot_time_limit > 0:
-			if self.restart_shot_timer() != 0: 
-				t=threading.Timer(self.match.shot_time_limit+2, self.timeout_shot_time) #Rajout de 2sec au temps limite pour laisser le temps de voir le 00:00 et absorber l'imprecision des timers
+			if self.shot_timer_a_relancer_depuis() != 0: 
+				t=threading.Timer(self.match.shot_time_limit+2, self.shot_timer_timed_out) #Rajout de 2sec au temps limite pour laisser le temps de voir le 00:00 et absorber l'imprecision des timers
 				t.start()
 				dict_timer[self.pk]= t
+		print("[{}]>>>structure timers (start): {} ".format(timezone.localtime(timezone.now()),dict_timer))
+	def shot_timer_restart(self):
+		self.shot_timer_stop()
+		self.shot_timer_start()
+	def jeu_en_pause(self):
+		dernier_evt = FrameEvent.objects.filter(frame=self).order_by('-d_horodatage').values_list('event_type__nom',flat=True).first()
+		if dernier_evt == 'chrono-pause':
+			print("jeu en pause")
+			return True
+		else:
+			print("jeu NON en pause")
+			
+			return False
 	def frame_states(self):
 		fr=self
 		etat_json = {
 			"match":{
-				"dureeM":fr.match.dureem_reelle(),
+				# "dureeM":fr.match.dureem_reelle(),
+				"dureem_en_sec":fr.match.dureem_reelle_en_sec(),
 				"vainqueurm":fr.match.vainqueurm(),
 				"score_match":fr.match.score_match_dans_framelive(), #On envoie qd mm cette info car à la fin de la dernière frame il faut prendre en compte le changement de score
 				},
 			"numf":fr.num,
 			"nextf":fr.next_frame_existe(),
-			"dureef":fr.dureef(),
+			# "dureef":fr.dureef(),
+			"dureef_en_sec":fr.dureef_reelle_en_secondes(),
 			"scoref_j1":fr.scoref_j1(),
 			"moyenne_j1":fr.moyennef_j1(),
 			"scoref_j2":fr.scoref_j2(),
@@ -491,7 +550,8 @@ class Frame(models.Model):
 			# "reprise_egalisatrice":fr.reprise_egalisatrice_now(),
 			"reprise_egalisatrice":fr.reprise_egalisatrice(),
 			"vainqueurf":fr.vainqueurf(),
-			"restart_shot_timer":fr.restart_shot_timer(),
+			"shot_timer_a_relancer_depuis":fr.shot_timer_a_relancer_depuis(),
+			"jeu_en_pause":fr.jeu_en_pause(),
 			}
 		return(etat_json)
 
@@ -525,7 +585,7 @@ class FrameEventManager(models.Manager):
 			FrameEvent.objects.create(event_type=EventType.objects.get(nom=evt),frame=frame,crediteur=crediteur,points=points)
 		else:
 			FrameEvent.objects.create(event_type=EventType.objects.get(nom=evt),frame=frame,crediteur=crediteur)
-		print('EVT-[M{}-F{}] Joueur {} : {} '.format(frame.match.pk,frame.pk,crediteur,evt.upper()))
+		print('[{}]>>>>>EVT-[M{}-F{}] Joueur {} : {} '.format(timezone.localtime(timezone.now()),frame.match.pk,frame.pk,crediteur,evt.upper()))
 class FrameEvent(models.Model):
 	frame = models.ForeignKey(Frame, on_delete=models.CASCADE)
 	crediteur = models.SmallIntegerField() # 0 = reprise ; 1=joueur1 ; 2=joueur2
@@ -553,7 +613,7 @@ class FrameEvent(models.Model):
 	def undo(self,profondeur=""): #ECRITURE		
 		if profondeur: 
 			FrameEvent.objects.filter(pk__in=FrameEvent.objects.filter(frame=self.frame).order_by('-d_horodatage').values_list('pk')[0:profondeur]).delete()
-			print('EVT-[M{}-F{}] Annulation de {} (profondeur : {})'.format(self.frame.match.pk,self.frame.pk,self.event_type.nom.upper(),profondeur))
+			print('[{}]>>>>>EVT-[M{}-F{}] Annulation de {} (profondeur : {})'.format(timezone.localtime(timezone.now()),self.frame.match.pk,self.frame.pk,self.event_type.nom.upper(),profondeur))
 		elif self.event_type.nom in ["score", "pass","toss-engage","engage"]: self.undo(1)
 		elif self.event_type.nom == "reprise-egalisatrice": self.undo(2)
 		elif self.event_type.nom == "correction": pass

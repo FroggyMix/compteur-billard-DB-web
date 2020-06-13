@@ -122,9 +122,15 @@
 .tools-boutons div span{display:flex;flex-direction:column;justify-content:center;}
 .tools-pannel button{font-size: 4vmin;margin:10px;min-width:50%;max-height:7vmin;}
 
-#outils_frame .green:hover #sombre{opacity:0.8;}
-
-
+#outils_frame .green:hover #sombre{z-index:20;}
+#sombre {
+	background-color:rgba(0,0,0,0.8);
+	width:100%;
+	height:100%;
+	position:fixed;
+	z-index:-2;
+	size:20em;
+}
 
 *, *:before, *:after {
   -moz-box-sizing: border-box;

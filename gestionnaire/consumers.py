@@ -36,6 +36,7 @@ class FrameConsumer_sync(WebsocketConsumer):
 
 	def receive(self, text_data):
 		text_data_json = json.loads(text_data)
+		print("[{}]<<<<<<<<<<RECEPTION MESSAGE: {}".format(timezone.localtime(timezone.now()),text_data_json['action']))
 		if text_data_json['action'] == 'correction':
 			j1_add = text_data_json['j1_add']
 			j2_add = text_data_json['j2_add']
@@ -81,6 +82,7 @@ class FrameConsumer_sync(WebsocketConsumer):
 
 	def score_message(self,event):
 		message = event['message']
+		print("[{}]>>>>>>>>>EMISSION MESSAGE ".format(timezone.localtime(timezone.now())))
 		self.send(text_data=json.dumps({'message':message}))
 	
 	def redirect(self,event):

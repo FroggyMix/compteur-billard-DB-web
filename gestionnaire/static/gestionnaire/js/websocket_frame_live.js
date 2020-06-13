@@ -1,5 +1,7 @@
+// console.log( Date.now())
 //PARAMETRES
-var TTS_OK=false // pour saisir la valeur patrr défaut du TTS (activé ou desactivé
+var TTS_OK=false // pour saisir la valeur par défaut du TTS (activé ou desactivé
+const CHRONO_AFFICHE_SECONDES = true //Pour chrono frame et match : Affiche et decompte les secondes si true, les minutes seulement si false
 
 //DECLARATION des CONSTANTES et VARIABLES
 const frameId = JSON.parse(document.getElementById('frame-id').textContent);
@@ -12,9 +14,9 @@ const FrameSocket = new WebSocket(
 	+ frameId
 	+ '/'
 );
-var debut_frame2=new Date();
-var end = 0
-var diff = 0
+// var debut_frame2=new Date();
+// var end = 0
+// var diff = 0
 var timerID = 0
 var frame_terminee = false
 const queryString = window.location.search;
@@ -28,6 +30,10 @@ var modal_url_OK=""
 var modal_url_Cancel=racine_site //"http://192.168.1.28:8000/"
 var modal_ouverte = false // permet de savoir is une modale est en cours 
 var start; //utilisé pour l'heure de début du countdown
+var JEU_EN_PAUSE = false; //utilisé pour les chronos 
+var TIMER_LIBRE =true; // Utilisé pour éviter de lancer plusieurs timers (chrono et match)
+var TIMERS_RUN = true; // Indique si les timers doivent tourner ou pas (pas avant debut match, pas en pause, pas après fin match...
+var COUNTDOWN_DANGER = 10; //Temps à partir duquel le countdown devient rouge et fait du son
 // var stop_countdown=false;
 if (arbitre){//affichage des outils dans le menu
 	document.querySelector('.green').classList.remove('invisible')
@@ -60,8 +66,8 @@ if (arbitre){
 		btn_TTS.classList.toggle('fa-toggle-on');
 	});
 }
-// Gestion du bouton PAUSE
-if (arbitre){
+//Gestion du bouton PAUSE
+if (document.getElementById('btn-pause')){
 	btn_PAUSE=document.getElementById('btn-pause')
 	txt_PAUSE=document.getElementById('label-pause')
 	btn_PAUSE.addEventListener('click', () => {
@@ -69,17 +75,21 @@ if (arbitre){
 		btn_PAUSE.classList.toggle('fa-play');
 		if (btn_PAUSE.classList.contains('fa-pause')){
 			txt_PAUSE.textContent="Mettre le jeu en pause";
-			chrono_play()
+			chrono_play();
+			document.getElementById('sombre').style.zIndex='-2';
 		}
 		else{
 			txt_PAUSE.textContent="Relancer le jeu";
-			chrono_pause()			
+			chrono_pause();
+			document.getElementById('sombre').style.zIndex='2';
 		}
 	});
 }
 
 FrameSocket.onmessage = function(e) {
 	const data = JSON.parse(e.data);	
+	console.log(">>>>>>>>>>>>>>>>>RECEPTION MESSAGE ")
+		
 	if (data.message.url){ //c'est un ordre de redirection
 		url = data.message.url
 		if(arbitre){
@@ -89,7 +99,7 @@ FrameSocket.onmessage = function(e) {
 		}
 		window.location.replace(url);	
 	}
-	else{
+	else{		
 		// La commande ci-dessous est pour l'instant enlevée car ca supprime certain message instantanément (2 trames de suite)
 		//document.querySelector('#message_live').textContent =  ""	//on réinitialise la zone de message, et à la fin du traitement si elle est tjs vide on la masque
 		document.querySelector('#scoref_j1').textContent = (data.message.scoref_j1);
@@ -102,34 +112,61 @@ FrameSocket.onmessage = function(e) {
 		var joueur_actif = (data.message.joueur_actif);
 		var break_j = (data.message.break);
 		
+		console.log("TIMERS_RUN1 = " + TIMERS_RUN)
+		if(!TIMERS_RUN) TIMER_LIBRE = true;
+		JEU_EN_PAUSE = (data.message.jeu_en_pause)
+		TIMERS_RUN = (!JEU_EN_PAUSE && data.message.vainqueurf == -1 && data.message.dureef_en_sec != null)
+		// console.log("JEU_EN_PAUSE = " + JEU_EN_PAUSE)
+		// console.log("data.message.vainqueurf = " + data.message.vainqueurf)
+		// console.log("data.message.dureef_en_sec = " + data.message.dureef_en_sec)
+		// console.log("TIMERS_RUN2 = " + TIMERS_RUN)
+		// console.log("TIMER_LIBRE = " + TIMER_LIBRE)
+		
+		
 		if (joueur_actif != "0"){force_joueur_actif(joueur_actif,break_j);}
+		// Mise à jour du bouton PAUSE
+		if (document.getElementById('btn-pause')){
+			btn_PAUSE=document.getElementById('btn-pause')
+			txt_PAUSE=document.getElementById('label-pause')
+			if (JEU_EN_PAUSE){
+				txt_PAUSE.textContent="Relancer le jeu";
+				btn_PAUSE.classList.add('fa-play');
+				btn_PAUSE.classList.remove('fa-pause');	
+				document.getElementById('sombre').style.zIndex='2';
+			}
+			else{
+				txt_PAUSE.textContent="Mettre le jeu en pause";
+				btn_PAUSE.classList.add('fa-pause');
+				btn_PAUSE.classList.remove('fa-play');
+				document.getElementById('sombre').style.zIndex='-2';
+			}
+		}
 		//Gestion du compte à rebour de temps de jeu
-		if (data.message.restart_shot_timer !=0){
-			start = Date.parse(data.message.restart_shot_timer+ " GMT");
+		if (data.message.shot_timer_a_relancer_depuis !=0){
+			start = Date.parse(data.message.shot_timer_a_relancer_depuis+ " GMT");
 			countdown(shot_time_limit,document.querySelector('#shot_timer'));
 		}
+		else{
+			document.querySelector('#shot_timer').textContent =(JEU_EN_PAUSE) ? "PAUSE" : "00:00"
+			document.querySelector('#shot_timer').classList.remove('timeout')
+		}		
 		//Gestion du chrono de frame : TODO optimisable? en ne relançant pas le chronoo à cchaque arrivée de ws ?
-		const hui=new Date();
-		var debut_frame=(data.message.dureef);
-		const h = debut_frame.split(':');	
-		debut_frame2=new Date(hui.getFullYear(),hui.getMonth(),hui.getDate(),hui.getHours()-h[0],hui.getMinutes()-h[1],hui.getSeconds()-h[2]);	
-		chrono_frame();
-		if (data.message.vainqueurf == -1){chrono_frame();}
-		
-		document.querySelector('#match_timer').textContent = data.message.match.dureeM;
+		// console.log("data.message.dureef_en_sec = "+data.message.dureef_en_sec)
+		chrono_sec(data.message.dureef_en_sec,data.message.match.dureem_en_sec)
+		if (TIMERS_RUN){
+		}	
+		else{	
+			}
 		
 		//On gère ensuite le cas où le match vient de commencer (i.e. : joueur_commence=-1)
 		var joueur_actif = (data.message.joueur_actif);
-		if (data.message.dureef !="00:00:00") {
-		}
-		else{
+		if (data.message.dureef_en_sec == null ) {			
 			if (data.message.numf == 1){
 				if (arbitre){
 					modal_ouverte = true;
 					toss_modal.showModal();
 					if (TTS_OK) {speak("Quel joueur engage ?");}}
-				else{affiche_message_live("En attente de l'identification du joueur qui commence")}
-				
+				else {affiche_message_live("En attente de l'identification du joueur qui commence")}
 			}
 			else{
 				discours = "Cliquer lorsque le joueur "+joueur_actif+" est prêt à engager"
@@ -264,6 +301,7 @@ document.addEventListener('keyup',(e) =>{
 		if(e.key == " "){action_pass()}
 		if(e.key == "Enter"){action_point()}
 		if(e.key == "Delete"){action_annuler()}
+		if(e.key == "P"){if (JEU_EN_PAUSE) chrono_play(); else chrono_pause()}
 	}
 });
 function action_annuler(){
@@ -288,7 +326,9 @@ function chrono_play(){
 	}
 }
 function action_point(zone = 0){
-	if (arbitre &&  frame_terminee == false) {
+	if (JEU_EN_PAUSE) window.alert("Le jeu est en pause");
+	if (frame_terminee) window.alert("La frame est terminée");
+	if (arbitre &&  frame_terminee == false && !JEU_EN_PAUSE) {
 		var j=-1
 		if (zone == 0){j = get_joueur_actif()}
 		if (zone == 1 && get_joueur_actif() == 1){j=1}
@@ -305,7 +345,9 @@ function action_point(zone = 0){
 	}
 }
 function action_pass(){	
-	if (arbitre && frame_terminee == false){
+	if (JEU_EN_PAUSE) window.alert("Le jeu est en pause");
+	if (frame_terminee) window.alert("La frame est terminée");	
+	if (arbitre && frame_terminee == false && !JEU_EN_PAUSE){
 		JouerSon("son-reprise");
 		// const score_reprise_DOM = document.querySelector('#frame_reprise'); 
 		FrameSocket.send(JSON.stringify({
@@ -314,24 +356,33 @@ function action_pass(){
 		}));
 	}
 };	
-function chrono_frame(){
-	end = new Date()
-    diff = end - debut_frame2
-	diff = new Date(diff)
-	var sec = diff.getSeconds()
-	var min = diff.getMinutes()
-	var hr = diff.getHours()-1
-	if (min < 10){
-		min = "0" + min
+function chrono_sec(secondesF,secondesM){
+	var nb_sec =0;
+	if (JEU_EN_PAUSE){
+		console.log(">>[IF] Affichage du temps de frame : "+format_HMS(secondesF))
+		document.querySelector('#frame_timer').textContent = format_HMS(secondesF);
+		document.querySelector('#match_timer').textContent = format_HMS(secondesM);
+		TIMER_LIBRE = true;
 	}
-	if (sec < 10){
-		sec = "0" + sec
+	else{
+		console.log("lancement timer")
+		ref = Date.now();
+		console.log("TIMER_LIBRE = " + TIMER_LIBRE)
+		if (TIMER_LIBRE) timer_sec();
+		TIMER_LIBRE = false;
+		console.log("--->>>TIMER_LIBRE = " + TIMER_LIBRE)
 	}
-	if (hr < 10){
-		hr = "0" + hr
+	function timer_sec(){
+		console.log("--->>>TIMER_RUN = " + TIMERS_RUN)
+		if(TIMERS_RUN) {
+			// console.log(">>[FUNC] Affichage du temps de frame : "+format_HMS(secondesF + nb_sec)+"(secondesF = "+secondesF+" ; delta_sec ="+nb_sec+")")
+			document.querySelector('#frame_timer').textContent = format_HMS(secondesF + nb_sec);
+			document.querySelector('#match_timer').textContent = format_HMS(secondesM + nb_sec);
+			nb_sec+=1;
+			setTimeout(timer_sec,(CHRONO_AFFICHE_SECONDES) ? 1000 : 60000);
+		}
+		else{TIMER_LIBRE = true}
 	}
-	document.querySelector('#frame_timer').textContent = hr + ":" + min //+ ":" + sec
-	timerID = setTimeout("chrono_frame()", 60000)
 }
 function ws_envoi_toss(numjoueur){	 
 	FrameSocket.send(JSON.stringify({
@@ -402,6 +453,23 @@ function affiche_message_live(text){
 		document.querySelector('#message_live').classList.add('retracte')
 	},10000);
 }
+function format_HMS(secondes, H = true, M = true, S = (CHRONO_AFFICHE_SECONDES)){ //affiche un nombre de sec dans HH:MM:SS ou HH:MM ou MM:SS
+	var hh='', mm='', ss=''
+	if (H){hh=new Date(secondes * 1000).toISOString().substr(11, 2)}
+	if (M){mm=new Date(secondes * 1000).toISOString().substr(14, 2)}
+	if (S){ss=new Date(secondes * 1000).toISOString().substr(17, 2)}
+	str = ''
+	if(hh){
+		str+=hh;
+		if(mm || ss){str+=":";}
+	}
+	if(mm){
+		str+=mm;
+		if(ss){str+=":";}
+	}
+	if(mm){str+=ss;}
+	return str
+}
 function countdown(duration, cible) {
 	var diff,
 	minutes,
@@ -417,15 +485,18 @@ function countdown(duration, cible) {
         minutes = minutes < 10 ? "0" + minutes : minutes;
         seconds = seconds < 10 ? "0" + seconds : seconds;
         cible.textContent = minutes + ":" + seconds; 
-        if (diff <= duration/10) {
+        if (diff <= COUNTDOWN_DANGER) {
+			JouerSon("son-tictac");
         	cible.classList.add('timeout')
         }
 		if (diff <= 0) {
+			if (diff == 0) JouerSon("son-buzzer");
         	cible.classList.add('timeout');
 			cible.textContent = "00:00";
         }
         else{
-        	setTimeout(timer,1000);
+        	if(TIMERS_RUN) setTimeout(timer,1000);
+			if(JEU_EN_PAUSE) {document.querySelector('#shot_timer').textContent = "PAUSE";}	
         }
     }
 }
