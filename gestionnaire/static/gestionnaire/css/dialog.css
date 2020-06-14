@@ -6,7 +6,7 @@ dialog {
 }
 /* native backdrop */
  dialog::backdrop {
-	 background-color: rgba(0, 0, 0, 0.9);
+	 background-color: var(--dialog-backdrop-bkg);
 }
 /* polyfill backdrop */
  dialog + .backdrop {
@@ -15,7 +15,7 @@ dialog {
 	 right: 0;
 	 bottom: 0;
 	 left: 0;
-	 background-color: rgba(0, 0, 0, 0.9);
+	 background-color: var(--dialog-backdrop-bkg);
 }
  dialog[open] {
 	 animation: slide-up 0.7s ease-out;
@@ -49,16 +49,16 @@ dialog[open] { /*commentable*/
 	 padding: 1em;
 }
  .modal-header {
-	 margin: 0;
-	 padding-bottom: 1em;
-	 background-color: #4CAF50;
-   color:#eee;
-	 border-top-left-radius: 0.3rem;
-	 border-top-right-radius: 0.3rem;
-	 // border-bottom: 1px solid #78a4d3;
+	margin: 0;
+	padding-bottom: 1em;
+	background-color: var(--dialog-titre-bkg);
+	color:var(--dialog-titre-color);
+	border-top-left-radius: 0.3rem;
+	border-top-right-radius: 0.3rem;
+	border-bottom: 1px solid var(--dialog-titre-border-color);
 }
  .modal-footer {
-	 border-top: 2px solid #4CAF50;
+	 border-top: 2px solid var(--dialog-footer-border-color);
 }
 /* misc page styles -- not important for demo */
  
@@ -69,46 +69,46 @@ dialog[open] { /*commentable*/
 	 margin-bottom: 0;
 }
  button {
-padding: 0.4em 1em 0.2em;
-margin-right:5px;
-color:#fff;
-background:#4CAF50;
-font-size: 2em;
-text-align: center;
-  font-style: normal;
-  border-radius: 5px;
-  border: 0px solid #fff;
-   /*float:center;*/
-  /* border-width: 1px 1px 3px ;*/
-  /* box-shadow: 0 -1px 0 rgba(255,255,255,0.1) inset;*/
+	padding: 0.4em 1em 0.2em;
+	margin-right:5px;
+	color:var(--dialog-button-color);
+	background:var(--dialog-button-bkg);
+	font-size: 2em;
+	text-align: center;
+	font-style: normal;
+	border-radius: 5px;
+	border: 0px solid #fff; /*utile un bord de 0 ?*/
+	/*float:center;*/
+	/* border-width: 1px 1px 3px ;*/
+	/* box-shadow: 0 -1px 0 rgba(255,255,255,0.1) inset;*/
 }
 button:hover {
-  font-size: 2.0em;
-   background:#0D8F11;
+	font-size: 2.0em;
+	background:#0D8F11;
 }
  #close {
-	 position: absolute;
-	 top:0em;
-	 right: 0em;
-	 padding: 0.2em;
-	 line-height: 0.6;
-	 background-color: transparent;
-	 border: 0;
-	 font-size: 3em;
-   color:#eee;
+	position: absolute;
+	top:0em;
+	right: 0em;
+	padding: 0.2em;
+	line-height: 0.6;
+	background-color: transparent;
+	border: 0;
+	font-size: 3em;
+    color:var(--dialog-bouton-close-color);
 }
 #close:hover {
-  font-size: 3.1em;
-  //  background:#0D8F11;
+	font-size: 3.1em;
+	background:#0D8F11;
 }
  @keyframes slide-up {
-	 0% {
-		 opacity: 0;
-		 transform: translate(0, 15px);
+	0% {
+		opacity: 0;
+		transform: translate(0, 15px);
 	}
-	 100% {
-		 opacity: 1;
-		 transform: translate(0, 0);
+	100% {
+		opacity: 1;
+		transform: translate(0, 0);
 	}
 }
  

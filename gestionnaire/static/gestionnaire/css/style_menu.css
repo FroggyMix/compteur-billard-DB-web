@@ -7,7 +7,7 @@
 header{
 	padding:5px;
 	padding-top:calc(var(--menu-hauteur)/8);
-	background-color: #fff;
+	background-color: var(--header-background-color); /*UTILE ?*/
 	box-shadow: 1px 1px 4px 0 rgba(0,0,0,.1);
 	/*position: fixed;*/
 	/*width: 99%;*/
@@ -16,7 +16,7 @@ header{
 }
 
 header,header a, header a.hover, header a:link, header a:visited{
-	color: #fff;
+	color: var(--header-color); /*UTILE ?*/;
 }
 
 /* header */
@@ -26,26 +26,25 @@ header,header a, header a.hover, header a:link, header a:visited{
 	padding: 0;
 	list-style: none;
 	overflow: hidden;
-	background-color: #333;
+	background-color: var(--menu-background);
 }
 
 .header li a {
 	display: block;
 	padding: 20px 20px;
-	border-right: 1px solid #f4f4f4;
+	border-right: 1px solid var(--menu-border-color);
 	text-decoration: none; 
 	height:calc(var(--menu-hauteur) - calc(1px) - calc(var(--menu-hauteur)/7));  
 }
 
 .header li {
 	list-style-type: none;
-	
 }
 
 .header li a:hover,
 .header .menu-btn:hover {
-	background-color: #eee;
-	color:#000;
+	background-color: var(--menu-hover-bkg-color);
+	color:var(--menu-hover-color); /*init = #000*/
 	height:calc(var(--menu-hauteur) - calc(1px) - calc(var(--menu-hauteur)/7));
 }
 
@@ -59,19 +58,18 @@ header,header a, header a.hover, header a:link, header a:visited{
 
 /* menu */
 
-.header {background-color:#333;}
+.header {background-color:var(--menu-background);/*redit avec plus haut non*/}
 .header .menu {
 	clear: both;
 	max-height: 0;
 	transition: max-height .2s ease-out;
 }
 .header .menu .current {
-	background-color: #4CAF50;
-	color: white;
+	background-color: var(--menu-selection-bkg-color);
+	color: var(--menu-selection-color);
 }
 
 /* menu icon */
-
 .header .menu-icon {
 	cursor: pointer;
 	display: inline-block;
@@ -82,7 +80,7 @@ header,header a, header a.hover, header a:link, header a:visited{
 }
 
 .header .menu-icon .navicon {
-	background: #fff;
+	background: var(--menu-navicon-background);
 	display: block;
 	height: 2px;
 	position: relative;
@@ -92,7 +90,7 @@ header,header a, header a.hover, header a:link, header a:visited{
 
 .header .menu-icon .navicon:before,
 .header .menu-icon .navicon:after {
-	background: #fff;
+	background: var(--menu-navicon-background); /*utile?*/
 	content: '';
 	display: block;
 	height: 100%;

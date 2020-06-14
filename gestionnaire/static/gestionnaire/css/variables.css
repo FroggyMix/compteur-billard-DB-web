@@ -7,9 +7,28 @@
 
 :root
 {
+	/*TODO*/
+	/*Est-ce possible de généraliser lesbox-shadow (tous les mêmes ?*/
+	/*Style_frame : li.green et li.yellow a changer en li.outils et li.home*/
+	
+	--header-background-color:#fff; /*UTILE?*/
+	--header-color:#fff; /*UTILE?*/
+	--sombre-bkg-color: rgba(0,0,0,0.8);
+	
 	--joueur-bille-couleurA:#fff; /*blanc*/
 	--joueur-bille-couleurB:#F5FABB; /*jaune*/
 	--joueur-inactif:#BDBDBD;
+	--frame_livemessage_bkg:#4CAF50;
+	--frame_livemessage_color:#fff;
+	--frame-timeout-color:red;
+	--frame-bottom-bkg:#333;
+	--frame-reprise-bkg:#bbb;
+	--frame-reprise-color:#333;
+	--frame-joueurs-bkg:#333;
+	--frame-joueurs-color:#fff;
+	--frame-break-color:#4CAF50;
+	--frame-actif-degradé-gauche:#555;
+	--frame-actif-degradé-droite:#666;
 
 	--body-background: #eee;
 	--body-text-size:1.1em;
@@ -24,6 +43,7 @@
 	--formulaire-label-size:1.1em;
 	--formulaire-bouton-color:#fff;
 	--formulaire-bouton-bkg-color:#4CAF50;
+	--formulaire-bouton-bkg-color-hover: #0D8F11;
 	--formulaire-saisie-bkg:#e8eeef;
 	--formulaire-saisie-color:#8a97a0;
 	--formulaire-saisie-size:1.1em;
@@ -31,14 +51,26 @@
 	--liste-titre-color: #447e9b;
 	--liste-titre-weight:bolder;
 	--liste-color:#111;
-	--liste-background:RGB(76,176,80,0.05);
+	--liste-background:whitesmoke; /*RGB(76,176,80,0.05);*/
+	--liste-border:border: 1px solid rgba(0, 0, 0, 0.2);
+	--liste-ul-border:1px solid rgba(0, 0, 0, 0.1);
+	--liste-li-border:1px solid #CCC;
+	--liste-total-border:1px solid rgba(0, 0, 0, 0.1);
+	--liste-li-bkg-color:rgba(0, 0, 0, 0.03);
+	--liste-bkg-en-cours:#4CAF50;
+	--liste-bkg-a-venir:#C97F42;
+	--liste-bkg-terminees:#0099FF;
+	--liste-bkg-total:#E0E0E0;
 
 	--menu-hauteur: 50px; /*>=40*/
 	--menu-background:#333;
 	--menu-color:#eee;
 	--menu-selection-bkg-color:#4CAF50;
+	--menu-selection-color:#fff;
 	--menu-hover-color:#333;
 	--menu-hover-bkg-color:#eee;
+	--menu-border-color:#f4f4f4;
+	--menu-navicon-background:#fff;
 
 	--footer-bkg : var(--menu-background);
 	--footer-color : var(--menu-color);
@@ -46,6 +78,14 @@
 	--boite-outil-bouton-hauteur:32px;
 	--boite-outil-texte-color:#4CAF50;
 	--boite-outil-pannel-background:#375238;
-
-  
+	--boite-outil-titre-color:#fff;
+	
+	--dialog-backdrop-bkg:rgba(0, 0, 0, 0.9);
+	--dialog-bouton-close-color:#eee;
+	--dialog-button-bkg: #4CAF50;
+	--dialog-button-color: #fff;
+	--dialog-titre-bkg:#4CAF50;
+	--dialog-titre-color:#eee;
+	--dialog-titre-border-color:#78a4d3;
+	--dialog-footer-border-color:#4CAF50;
 }

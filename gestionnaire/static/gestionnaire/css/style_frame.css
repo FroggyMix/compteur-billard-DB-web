@@ -85,13 +85,13 @@
 	margin: 0px;
 }
 .tools-pannel h1{
-	color: #fff;
+	color: var(--boite-outil-titre-color);
 	font-size: 6vmin;
 	padding: 10px 10px 0px 10px;
 	align-self: flex-end;
 }
 .tools-pannel h2{
-	color: #fff;
+	color: var(--boite-outil-titre-color);
 	font-size: 3vmin;
 	padding:10px;
 	margin-top:15px;	
@@ -124,7 +124,7 @@
 
 #outils_frame .green:hover #sombre{z-index:20;}
 #sombre {
-	background-color:rgba(0,0,0,0.8);
+	background-color:var(--sombre-bkg-color);
 	width:100%;
 	height:100%;
 	position:fixed;
@@ -144,8 +144,8 @@
 #message_live {
 	display:block;
 	max-height:50px;
-	background-color:#4CAF50;
-	color:#fff;/*#4CAF50 FF52AE;*/
+	background-color:var(--frame_livemessage_bkg);
+	color:var(--frame_livemessage_color);/*#4CAF50 FF52AE;*/
 	font-size:2em;
 	padding:5px;
 	margin:2px 2px 0px 2px;
@@ -162,12 +162,10 @@
 }
 section{ /*AJOUT FLEX MEDIAQ*/
   flex:1;
-  /*padding:1rem;
-  margin:2px;*/
 }
 
 .timeout {
-	color:red;
+	color:var(--frame-timeout-color);
 }
 
 .joueur,.reprise {
@@ -198,7 +196,7 @@ section{ /*AJOUT FLEX MEDIAQ*/
 
 .match-infos{display:flex;flex-direction:column;}
 
-.frame_bottom{flex-grow:1;background:#333}
+.frame_bottom{flex-grow:1;background:var(--frame-bottom-bkg)}
 
 /*Joueur ACTIF*/
 .couleur1.joueur_actif{color:var(--joueur-bille-couleurA);}
@@ -220,7 +218,7 @@ section{ /*AJOUT FLEX MEDIAQ*/
 .stat_wrapper{padding:10px;}
 /*.frame_bottom {flex: 1;}*/
 
-.reprise{background-color:#bbb;color:#333;}
+.reprise{background-color:var(--frame-reprise-bkg);color:var(--frame-reprise-color);}
 
 .onglet-dd-tools {
 	position:absolute;
@@ -234,9 +232,6 @@ section{ /*AJOUT FLEX MEDIAQ*/
 	cursor: pointer;
 	background:transparent;
 }
-/* .invisible{  MIS DANS STYLE.CSS*/
-	/* display:none !important; */
-/* } */
 
 .retracte{
 	height:0px;
@@ -269,8 +264,8 @@ section {
 	margin: 0;
 	border: 2px solid #eee;
 	/*border-radius: 10px;*/
-	color: #fff;
-	background: #333;
+	color: var(--frame-joueurs-color);
+	background: var(--frame-joueurs-bkg);
 	font-size: 1.3vmin;
 }
 
@@ -285,7 +280,7 @@ section {
 .break span{font-size:13vmin;}
 .match_score span{font-size:8vmin;}
 .distance{font-size:4vmin;}
-.break{	display: none; color:#4CAF50;} /*par défaut le break n'est pas affiché (cf. .active)*/
+.break{	display: none; color:var(--frame-break-color);} /*par défaut le break n'est pas affiché (cf. .active)*/
 
 .frame_reprise, .scoref {cursor: pointer;}
 
@@ -304,27 +299,27 @@ section {
 
 .gauche.joueur_actif{
 /* IE10+ */ 
-background-image: -ms-radial-gradient(100% 75%, ellipse farthest-corner, #555 0%, #333 100%);
+background-image: -ms-radial-gradient(100% 75%, ellipse farthest-corner, var(--frame-actif-degradé-gauche) 0%, var(--frame-joueurs-bkg) 100%);
 /* Mozilla Firefox */ 
-background-image: -moz-radial-gradient(100% 25%, ellipse farthest-corner, #555 0%, #333 100%);
+background-image: -moz-radial-gradient(100% 25%, ellipse farthest-corner, var(--frame-actif-degradé-gauche) 0%, var(--frame-joueurs-bkg) 100%);
 /* Opera */ 
-background-image: -o-radial-gradient(100% 25%, ellipse farthest-corner, #555 0%, #333 100%);
+background-image: -o-radial-gradient(100% 25%, ellipse farthest-corner, var(--frame-actif-degradé-gauche) 0%, var(--frame-joueurs-bkg) 100%);
 /* Webkit (Safari/Chrome 10) */ 
-background-image: -webkit-gradient(radial, 100% 25%, 0, 286, color-stop(0, #555), color-stop(100, #333));
+background-image: -webkit-gradient(radial, 100% 25%, 0, 286, color-stop(0, var(--frame-actif-degradé-gauche)), color-stop(100, var(--frame-joueurs-bkg)));
 /* Webkit (Chrome 11+) */ 
-background-image: -webkit-radial-gradient(100% 25%, ellipse farthest-corner, #555 0%, #333 75%);
+background-image: -webkit-radial-gradient(100% 25%, ellipse farthest-corner, var(--frame-actif-degradé-gauche) 0%, var(--frame-joueurs-bkg) 75%);
 }
 .droite.joueur_actif{
 /* IE10+ */ 
-background-image: -ms-radial-gradient(0% 25%, ellipse farthest-corner, #666 0%, #333 100%);
+background-image: -ms-radial-gradient(0% 25%, ellipse farthest-corner, var(--frame-actif-degradé-droite) 0%, var(--frame-joueurs-bkg) 100%);
 /* Mozilla Firefox */ 
-background-image: -moz-radial-gradient(0% 25%, ellipse farthest-corner, #666 0%, #333 100%);
+background-image: -moz-radial-gradient(0% 25%, ellipse farthest-corner, var(--frame-actif-degradé-droite) 0%, var(--frame-joueurs-bkg) 100%);
 /* Opera */ 
-background-image: -o-radial-gradient(0% 25%, ellipse farthest-corner, #666 25%, #333 75%);
+background-image: -o-radial-gradient(0% 25%, ellipse farthest-corner, var(--frame-actif-degradé-droite) 25%, var(--frame-joueurs-bkg) 75%);
 /* Webkit (Safari/Chrome 10) */ 
-background-image: -webkit-gradient(radial, 0% 25%, 0, 286, color-stop(0, #666), color-stop(100, #333));
+background-image: -webkit-gradient(radial, 0% 25%, 0, 286, color-stop(0, var(--frame-actif-degradé-droite)), color-stop(100, var(--frame-joueurs-bkg)));
 /* Webkit (Chrome 11+) */ 
-background-image: -webkit-radial-gradient(0% 25%, ellipse farthest-corner, #666 0%, #333 100%);
+background-image: -webkit-radial-gradient(0% 25%, ellipse farthest-corner, var(--frame-actif-degradé-droite) 0%, var(--frame-joueurs-bkg) 100%);
 }
 .blur{
   overflow:hidden;
